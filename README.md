@@ -74,10 +74,14 @@ lead follow-ups at 3 and 10 days, and cleanup of expired sessions/tokens and aba
 
 ## Deploying to Render
 
-`render.yaml` is a Render Blueprint (Postgres, API, cron job, two static sites — Frankfurt region, closest to Nigeria).
+`render.yaml` is a Render Blueprint (API, cron job, two static sites — Frankfurt region, closest to Nigeria).
+The database already exists: **`cca-db`** (free plan, Frankfurt, id `dpg-dbearalg1s2s73f0cd1g-a`), migrated and seeded with the
+catalogue, grading scheme and super admin `admin@chefsculinary.com`. The Blueprint doesn't create or manage it. Free Render databases
+are deleted after 30 days (this one on 23 Nov 2026) and have no backups — upgrade it in the dashboard before going live; data is kept.
 
 1. Push the repo to GitHub with `package-lock.json` committed (builds use `npm ci`).
 2. In Render: **New → Blueprint**, select the repo, and fill in the prompted values:
+   - `cca-api` and `cca-daily-jobs`: `DATABASE_URL` = cca-db's **Internal Database URL** (Dashboard → cca-db → Connect)
    - `cca-api`: `WEB_URL`, `ADMIN_URL`, `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `PAYSTACK_SECRET_KEY`, SMTP settings, `EMAIL_FROM`, `ADMIN_NOTIFY_EMAILS`
    - `cca-daily-jobs`: the same `WEB_URL` and SMTP settings
    - `cca-web` / `cca-admin`: `VITE_API_URL` = the API's URL (e.g. `https://cca-api.onrender.com`)
@@ -87,7 +91,7 @@ lead follow-ups at 3 and 10 days, and cleanup of expired sessions/tokens and aba
 5. Sign in to the admin app with the seed super admin, change the password, then add staff under Settings → Staff users.
 
 Plan names and region in `render.yaml` are starting points — if the Blueprint rejects a plan name, pick the equivalent in the dashboard.
-Use a paid Postgres plan for daily backups and point-in-time recovery (spec §12).
+Use a paid Postgres plan for daily backups and point-in-time recovery (spec §12). New migrations still run automatically on each API deploy.
 
 ## Still to do / needs the academy's input
 
