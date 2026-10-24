@@ -1,0 +1,271 @@
+/* ---------- Split ---------- */
+.car-split {
+  display: grid;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.car-split__media {
+  position: relative;
+}
+
+.car-split__media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center 30%;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgb(30 20 14 / 0.16);
+}
+
+.car-split__tag {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-brand);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 8px 20px rgb(30 20 14 / 0.25);
+}
+
+.car-split__body h2 {
+  margin-top: var(--space-2);
+}
+
+.car-split__body p {
+  margin-top: var(--space-4);
+  color: var(--color-ink-muted);
+}
+
+.car-split__body .btn {
+  margin-top: var(--space-5);
+}
+
+@media (min-width: 900px) {
+  .car-split {
+    grid-template-columns: 1fr 1.05fr;
+    gap: var(--space-8);
+  }
+}
+
+/* ---------- Career paths grid ---------- */
+.car-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.car-card {
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.car-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgb(30 20 14 / 0.1);
+}
+
+.car-card__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+}
+
+.car-card h3 {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+/* ---------- Skills ---------- */
+.car-skills {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.car-skills__intro p {
+  margin-top: var(--space-3);
+  color: var(--color-ink-muted);
+}
+
+.car-skills__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.car-skills__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  color: var(--color-ink);
+}
+
+.car-skills__check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+}
+
+@media (min-width: 900px) {
+  .car-skills {
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--space-8);
+  }
+
+  .car-skills__list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- Employers band ---------- */
+.car-employers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-7) var(--space-6);
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-brand-dark), var(--color-brand));
+  border-radius: var(--radius-lg);
+}
+
+.car-employers__text {
+  max-width: 60ch;
+}
+
+.car-employers h2 {
+  color: #fff;
+  margin: var(--space-2) 0;
+}
+
+.car-employers p {
+  color: rgb(255 255 255 / 0.92);
+  margin: 0;
+}
+
+.car-employers .eyebrow {
+  color: rgb(255 255 255 / 0.85);
+}
+
+.car-employers__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Outline button on the brand band → make it readable */
+.car-employers .btn--outline {
+  color: #fff;
+  border-color: rgb(255 255 255 / 0.7);
+}
+
+.car-employers .btn--outline:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.car-employers .btn--primary {
+  background: #fff;
+  color: var(--color-brand-dark);
+}
+
+.car-employers .btn--primary:hover {
+  background: rgb(255 255 255 / 0.9);
+  color: var(--color-brand-dark);
+}
+
+/* ---------- Alumni ---------- */
+.car-alumni {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.car-alumni__item {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-line);
+}
+
+.car-alumni__item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: center 25%;
+  transition: transform 0.4s ease;
+}
+
+.car-alumni__item:hover img {
+  transform: scale(1.04);
+}
+
+.car-alumni__cta {
+  margin-top: var(--space-6);
+  text-align: center;
+}
+
+.car-alumni__cta p {
+  margin-bottom: var(--space-4);
+  color: var(--color-ink-muted);
+}
+
+@media (min-width: 768px) {
+  .car-alumni {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- CTA ---------- */
+.car-cta {
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(135deg, #2e221b, #4a2c18);
+  border-radius: var(--radius-lg);
+}
+
+.car-cta h2 {
+  color: #fff;
+}
+
+.car-cta p {
+  max-width: 48ch;
+  margin: var(--space-3) auto 0;
+  color: rgb(255 255 255 / 0.9);
+  font-size: var(--text-lg);
+}
+
+.car-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}

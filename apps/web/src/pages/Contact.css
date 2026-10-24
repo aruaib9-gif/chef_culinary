@@ -1,0 +1,225 @@
+/* ---------- Quick action cards ---------- */
+.contact-quick {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
+.contact-quick__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-5);
+  text-decoration: none;
+  color: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-quick__card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-brand);
+  box-shadow: 0 16px 36px rgb(30 20 14 / 0.1);
+}
+
+.contact-quick__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+}
+
+.contact-quick__label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.contact-quick__value {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* ---------- Form + info grid ---------- */
+.contact-grid {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.contact-card {
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.contact-card h2 {
+  margin-bottom: var(--space-2);
+}
+
+.contact-card .form {
+  margin-top: var(--space-5);
+  max-width: none;
+}
+
+/* Info panel */
+.contact-info {
+  padding: var(--space-6);
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.contact-info h2 {
+  margin-bottom: var(--space-4);
+}
+
+.contact-info__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.contact-info__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.contact-info__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  align-self: center;
+  width: 42px;
+  height: 42px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-brand);
+  box-shadow: 0 1px 2px rgb(30 20 14 / 0.06);
+}
+
+.contact-info__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.contact-info__list strong {
+  display: block;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  margin-bottom: 2px;
+}
+
+.contact-info__list a,
+.contact-info__list span {
+  display: block;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.contact-info__list li > div {
+  min-width: 0;
+}
+
+.contact-info__list a:hover {
+  color: var(--color-brand);
+}
+
+.contact-info__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-whatsapp);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: filter 0.2s ease;
+}
+
+.contact-info__whatsapp:hover {
+  filter: brightness(0.95);
+}
+
+.contact-info__socials {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.contact-info__social {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-info__social:hover {
+  background: var(--color-brand);
+  color: #fff;
+  border-color: var(--color-brand);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* ---------- Map ---------- */
+.contact-map {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 16px 40px rgb(30 20 14 / 0.1);
+}
+
+.contact-map iframe {
+  display: block;
+  width: 100%;
+  height: 420px;
+  border: 0;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 600px) {
+  .contact-card,
+  .contact-info {
+    padding: var(--space-4);
+  }
+
+  .contact-quick__card {
+    padding: var(--space-4);
+  }
+
+  .contact-info__whatsapp {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .contact-map iframe {
+    height: 320px;
+  }
+}

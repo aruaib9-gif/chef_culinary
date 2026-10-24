@@ -1,0 +1,44 @@
+/* Floating WhatsApp button + sticky mobile Apply/Enquire bar (spec §4.1) */
+.whatsapp-fab {
+  position: fixed;
+  right: var(--gutter);
+  bottom: calc(72px + var(--space-3));
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-whatsapp);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.whatsapp-fab:hover {
+  color: #fff;
+  filter: brightness(0.95);
+}
+
+.mobile-cta {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--gutter);
+  padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-line);
+  box-shadow: 0 -4px 16px rgb(46 34 27 / 0.08);
+}
+
+@media (min-width: 768px) {
+  .mobile-cta {
+    display: none;
+  }
+
+  .whatsapp-fab {
+    bottom: var(--space-5);
+  }
+}

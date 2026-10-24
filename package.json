@@ -1,0 +1,23 @@
+{
+  "name": "chefs-culinary-academy",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "server"
+  ],
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace server & npm run dev --workspace @cca/web & npm run dev --workspace @cca/admin & wait",
+    "dev:web": "npm run dev --workspace @cca/web",
+    "dev:admin": "npm run dev --workspace @cca/admin",
+    "dev:server": "npm run dev --workspace server",
+    "build": "npm run build:web && npm run build:admin",
+    "build:web": "npm run build --workspace @cca/web",
+    "build:admin": "npm run build --workspace @cca/admin",
+    "db:migrate": "npm run migrate --workspace server"
+  }
+}

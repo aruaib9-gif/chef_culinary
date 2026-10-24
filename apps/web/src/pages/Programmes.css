@@ -1,0 +1,100 @@
+/* ---------- Filter pills ---------- */
+.prog-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.prog-filter__btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.prog-filter__btn:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+.prog-filter__btn.is-active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: #fff;
+}
+
+.prog-grid {
+  align-items: stretch;
+}
+
+/* ---------- What you get ---------- */
+.prog-includes {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+}
+
+.prog-include {
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prog-include:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgb(30 20 14 / 0.1);
+}
+
+.prog-include__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto var(--space-3);
+  border-radius: 50%;
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+}
+
+.prog-include h3 {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+/* ---------- Help band ---------- */
+.prog-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-7) var(--space-6);
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.prog-help h2 {
+  margin-bottom: var(--space-2);
+}
+
+.prog-help p {
+  color: var(--color-ink-muted);
+  margin: 0;
+  max-width: 48ch;
+}
+
+.prog-help__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
