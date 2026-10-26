@@ -8,7 +8,7 @@
     "server"
   ],
   "engines": {
-    "node": ">=22.9"
+    "node": ">=20.12"
   },
   "scripts": {
     "dev": "npm run dev --workspace server & npm run dev --workspace @cca/web & npm run dev --workspace @cca/admin & wait",

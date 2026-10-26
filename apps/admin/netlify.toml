@@ -1,0 +1,25 @@
+# Netlify site for the admin back office.
+# In Netlify: Base directory = (leave empty, repo root), Package directory = apps/admin.
+# Paths below are relative to the repo root; the build runs there (npm workspaces).
+[build]
+  command = "npm run build:admin"
+  publish = "apps/admin/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Set VITE_API_URL in the Netlify UI, e.g. https://cca-api.onrender.com
+
+# Single-page app routing lives in apps/admin/public/_redirects (copied into the build).
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

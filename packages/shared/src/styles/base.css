@@ -56,6 +56,126 @@ select {
   color: inherit;
 }
 
+/* Every single-choice dropdown (website, portal and admin) gets the same chevron with room on the right.
+   The :not() selectors raise specificity above component rules like `.a-field select` that reset padding. */
+select:not([multiple]):not([size]) {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b5d54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  background-size: 16px;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+select:not([multiple]):not([size]):disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Branded dropdown list where the browser supports styleable selects (Chrome/Edge 135+).
+   Other browsers keep their native list, so this is a pure enhancement. */
+@supports (appearance: base-select) {
+  select:not([multiple]):not([size]),
+  select:not([multiple]):not([size])::picker(select) {
+    appearance: base-select;
+  }
+
+  select:not([multiple]):not([size]) {
+    display: inline-flex;
+    align-items: center;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  /* The chevron is drawn as a background image (above); hide the built-in icon. */
+  select:not([multiple]):not([size])::picker-icon {
+    display: none;
+  }
+
+  select:not([multiple]):not([size]):open {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-light);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c2541b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 15l6-6 6 6'/></svg>");
+  }
+
+  ::picker(select) {
+    margin-block: 6px;
+    padding: 6px;
+    max-height: min(420px, 70vh);
+    overflow-y: auto;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 32px rgb(46 34 27 / 0.16), 0 2px 6px rgb(46 34 27 / 0.08);
+    /* Subtle open animation */
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity 0.14s ease, translate 0.14s ease, display 0.14s allow-discrete, overlay 0.14s allow-discrete;
+  }
+
+  select:open::picker(select) {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    select:open::picker(select) {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
+
+  select:not([multiple]):not([size]) option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 36px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    color: var(--color-ink);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+
+  select:not([multiple]):not([size]) option:hover,
+  select:not([multiple]):not([size]) option:focus-visible {
+    color: var(--color-brand-dark);
+    background: var(--color-brand-tint);
+    outline: none;
+  }
+
+  select:not([multiple]):not([size]) option:checked {
+    font-weight: 600;
+    color: var(--color-brand-dark);
+    background: var(--color-brand-light);
+  }
+
+  select:not([multiple]):not([size]) option:disabled {
+    color: var(--color-ink-muted);
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  /* Tick on the right of the selected item */
+  select:not([multiple]):not([size]) option::checkmark {
+    order: 1;
+    margin-left: auto;
+    content: '✓';
+    font-weight: 700;
+    color: var(--color-brand);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::picker(select) {
+    transition: none;
+  }
+}
+
 h1,
 h2,
 h3,

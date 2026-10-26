@@ -1,8 +1,32 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "api", "runtimeExecutable": "bash", "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npm run dev --workspace server"], "port": 4000 },
-    { "name": "web", "runtimeExecutable": "bash", "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npm run dev --workspace @cca/web"], "port": 5173 },
-    { "name": "admin", "runtimeExecutable": "bash", "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npm run dev --workspace @cca/admin"], "port": 5174 }
+    {
+      "name": "api",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npm run dev --workspace server"
+      ],
+      "port": 4000
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npm run dev --workspace @cca/web -- --port 5175"
+      ],
+      "port": 5175
+    },
+    {
+      "name": "admin",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npm run dev --workspace @cca/admin -- --port 5174"
+      ],
+      "port": 5174
+    }
   ]
 }

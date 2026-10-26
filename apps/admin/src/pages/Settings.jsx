@@ -131,7 +131,7 @@ function Users() {
   return (
     <>
       <div className="a-row" style={{ marginBottom: 'var(--space-3)' }}><button type="button" className="a-btn" onClick={() => setAdding(true)}>Add staff user</button></div>
-      <Notice><strong>Super admin</strong>: everything, including finance, publishing results, certificates, settings and users. <strong>Staff</strong>: admissions, students, cohorts, score entry, attendance, materials and announcements.</Notice>
+      <RoleGuide users={data} />
       {link && <Notice tone="warn">Email isn’t configured, so share this one-time set-password link with the new user directly: <code style={{ wordBreak: 'break-all' }}>{link}</code></Notice>}
       <ErrorBox error={action.error} />
       <div className="a-table-wrap">
@@ -140,12 +140,16 @@ function Users() {
           <tbody>
             {data.map((u) => (
               <tr key={u.id}>
-                <td>{u.full_name}{u.id === me.id && <span className="a-meta"> (you)</span>}</td>
+                <td className="nowrap"><strong>{u.full_name}</strong>{u.id === me.id && <span className="a-meta"> (you)</span>}</td>
                 <td>{u.email}</td>
-                <td>
-                  <select className="a-input" value={u.role} disabled={u.id === me.id} onChange={(e) => patch(u, { role: e.target.value })} aria-label="Role">
-                    <option value="super_admin">Super admin</option><option value="staff">Staff</option>
-                  </select>
+                <td className="nowrap">
+                  {u.id === me.id ? (
+                    <span className={`role-pill role-pill--${u.role}`} title="You can’t change your own role">{u.role === 'super_admin' ? 'Super admin' : 'Staff'}</span>
+                  ) : (
+                    <select className="a-input" style={{ minWidth: 150 }} value={u.role} onChange={(e) => patch(u, { role: e.target.value })} aria-label={`Role for ${u.full_name}`}>
+                      <option value="super_admin">Super admin</option><option value="staff">Staff</option>
+                    </select>
+                  )}
                 </td>
                 <td>{u.two_factor_enabled ? 'On' : 'Off'}</td>
                 <td className="nowrap">{dateTime(u.last_login_at)}</td>
@@ -161,6 +165,69 @@ function Users() {
       </div>
       {adding && <AddUser onClose={() => setAdding(false)} onSaved={(r) => { setAdding(false); setLink(r.setupLink ?? null); reload() }} />}
     </>
+  )
+}
+
+// What each role can do — mirrors the permission checks in the API.
+const ROLE_GUIDE = [
+  {
+    role: 'super_admin',
+    label: 'Super admin',
+    summary: 'Full control of the academy’s system.',
+    can: [
+      'Everything staff can do',
+      'Payments, fees, refunds and financial reports',
+      'Publish results and edit grading schemes',
+      'Issue and revoke certificates',
+      'Send bulk email to leads, students and alumni',
+      'Website settings, staff accounts and the audit log',
+      'Permanently delete records',
+    ],
+  },
+  {
+    role: 'staff',
+    label: 'Staff',
+    summary: 'Day-to-day academic and admissions work.',
+    can: [
+      'Leads, applications, admissions and enrolment',
+      'Students, cohorts and timetables',
+      'Enter and correct scores (as drafts)',
+      'Attendance, materials and assignments',
+      'Announcements, requests and feedback',
+      'Reports (except finance)',
+    ],
+    cannot: ['Finance', 'Publishing results', 'Issuing certificates', 'Bulk email', 'Settings and staff accounts'],
+  },
+]
+
+function RoleGuide({ users }) {
+  const count = (role) => users.filter((u) => u.role === role && u.is_active).length
+  return (
+    <section className="role-guide" aria-label="What each role can do">
+      {ROLE_GUIDE.map((r) => (
+        <article key={r.role} className="role-card">
+          <header className="role-card__head">
+            <span className={`role-pill role-pill--${r.role}`}>{r.label}</span>
+            <span className="a-meta">{count(r.role)} active</span>
+          </header>
+          <p className="role-card__summary">{r.summary}</p>
+          <ul className="role-card__list">
+            {r.can.map((item) => (
+              <li key={item}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+          {r.cannot && (
+            <div className="role-card__cannot">
+              <span className="role-card__cannot-label">Super admin only</span>
+              <ul>{r.cannot.map((item) => <li key={item}>{item}</li>)}</ul>
+            </div>
+          )}
+        </article>
+      ))}
+    </section>
   )
 }
 

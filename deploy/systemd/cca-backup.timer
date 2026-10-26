@@ -1,0 +1,9 @@
+[Unit]
+Description=Nightly CCA database backup (02:00 Lagos time)
+
+[Timer]
+OnCalendar=*-*-* 01:00:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

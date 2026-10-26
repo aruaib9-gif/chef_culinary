@@ -1,0 +1,116 @@
+.legal {
+  display: grid;
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.legal__body {
+  max-width: 72ch;
+}
+
+.legal__updated {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+}
+
+.legal__section {
+  margin-bottom: var(--space-6);
+}
+
+.legal__section h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-3);
+}
+
+.legal__section p {
+  margin-bottom: var(--space-3);
+  color: var(--color-ink);
+  line-height: 1.75;
+}
+
+.legal__section ul {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.legal__section li {
+  line-height: 1.6;
+}
+
+.legal__contact address {
+  font-style: normal;
+  line-height: 1.9;
+}
+
+.legal__contact a {
+  color: var(--color-brand);
+  text-decoration: none;
+}
+
+.legal__contact a:hover {
+  text-decoration: underline;
+}
+
+/* Sidebar */
+.legal__aside-inner {
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.legal__aside h3 {
+  font-size: var(--text-base);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-3);
+}
+
+.legal__aside ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.legal__aside a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.legal__aside a:hover {
+  background: var(--color-surface-warm);
+  color: var(--color-brand);
+}
+
+.legal__aside a.is-active {
+  background: var(--color-brand-tint);
+  color: var(--color-brand-dark);
+}
+
+@media (min-width: 900px) {
+  .legal {
+    grid-template-columns: 1fr 260px;
+    gap: var(--space-8);
+  }
+
+  .legal__aside {
+    order: 2;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-4));
+  }
+}

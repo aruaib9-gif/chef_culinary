@@ -1,0 +1,20 @@
+[Unit]
+Description=Chefs Culinary Academy API
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=cca
+Group=cca
+WorkingDirectory=/opt/cca/server
+ExecStart=/usr/bin/node --env-file=/opt/cca/server/.env src/index.js
+Restart=always
+RestartSec=5
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

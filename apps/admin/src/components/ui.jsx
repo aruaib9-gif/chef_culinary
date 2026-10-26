@@ -28,8 +28,13 @@ export function ErrorBox({ error, onRetry }) {
   )
 }
 
+// Children sit in one block so bold text, links and code read as a single sentence.
 export function Notice({ tone = 'info', children }) {
-  return <div className={`a-alert a-alert--${tone}`} role="status">{children}</div>
+  return (
+    <div className={`a-alert a-alert--${tone}`} role="status">
+      <div className="a-alert__body">{children}</div>
+    </div>
+  )
 }
 
 const TONES = {

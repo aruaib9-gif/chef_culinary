@@ -1,6 +1,9 @@
 import { readJSON, writeJSON, remove } from './safeStorage.js'
 
-const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:4000').replace(/\/$/, '')
+// API base URL. Empty (the default) = same origin: requests go to /api on this site's own address
+// (the Vite dev server and Nginx forward them to the backend). Set VITE_API_URL at build time only when the API
+// lives on a different domain, e.g. https://api.thechefsculinaryacademy.com on cPanel or Render.
+const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 const TOKEN_KEY = 'cca.token'
 
 export const getToken = () => readJSON(TOKEN_KEY, null)

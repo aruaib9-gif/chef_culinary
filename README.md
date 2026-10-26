@@ -11,12 +11,12 @@ Monorepo (npm workspaces) built from the *Website Requirements & Feature Specifi
 
 ## Getting started (local)
 
-Requires Node 22.9+ and PostgreSQL.
+Requires Node 20.12+ (22 recommended) and PostgreSQL.
 
 ```bash
 npm install
 cp server/.env.example server/.env          # set DATABASE_URL, JWT_SECRET, SEED_ADMIN_*
-cp apps/web/.env.example apps/web/.env
+cp apps/web/.env.example apps/web/.env      # VITE_API_URL can stay empty: the dev server forwards /api to :4000
 cp apps/admin/.env.example apps/admin/.env
 createdb chefs_academy
 npm run db:migrate
@@ -71,6 +71,13 @@ lead follow-ups at 3 and 10 days, and cleanup of expired sessions/tokens and aba
   with the logo in `server/assets/logo.jpg`. Certificate and result-slip QR codes point to `WEB_URL/verify`.
 - **Payments**: Paystack hosted checkout (card, transfer, USSD) — card details never reach our server. Payments settle on the redirect back
   *and* via the signed webhook (`POST /api/payments/paystack/webhook`), idempotently, with amount checks.
+
+## Hosting options
+
+- **Netlify + Render (free, for testing)** — [`deploy/NETLIFY_SETUP.md`](deploy/NETLIFY_SETUP.md): websites on Netlify, API and database on Render.
+- **Render** — below (managed; about $14/month).
+- **VPS** (Hostinger, GoDaddy, …) — [`deploy/VPS_SETUP.md`](deploy/VPS_SETUP.md): one script sets up everything on Ubuntu 24.04.
+- **cPanel shared hosting** — [`deploy/CPANEL_SETUP.md`](deploy/CPANEL_SETUP.md): needs "Setup Node.js App" and PostgreSQL (or an external PostgreSQL).
 
 ## Deploying to Render
 

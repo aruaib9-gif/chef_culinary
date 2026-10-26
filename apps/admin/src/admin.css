@@ -4,6 +4,10 @@
   background: var(--color-surface-warm);
 }
 
+.admin {
+  --admin-bar: 64px;
+}
+
 .admin__topbar {
   position: sticky;
   top: 0;
@@ -11,25 +15,199 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  gap: var(--space-3);
+  height: var(--admin-bar);
   padding-inline: var(--gutter);
-  background: var(--color-ink);
+  background: var(--color-ink-deep);
   color: #fff;
+  border-bottom: 3px solid var(--color-brand);
+}
+
+.admin__topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .admin__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  color: #fff;
+  text-decoration: none;
+}
+
+.admin__logo {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+}
+
+.admin__brand-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.admin__brand-name {
+  overflow: hidden;
   font-family: var(--font-heading);
+  font-size: var(--text-base);
   font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.admin__brand-sub {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f0b48f;
 }
 
 .admin__menu-btn {
-  min-height: 40px;
-  padding: 0 var(--space-3);
-  background: none;
-  border: 1px solid rgb(255 255 255 / 0.3);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.2);
   border-radius: var(--radius-sm);
   color: #fff;
   cursor: pointer;
+}
+
+.admin__menu-btn:hover { background: rgb(255 255 255 / 0.16); }
+
+/* Account menu */
+.admin__account { position: relative; flex: none; }
+
+.admin__account-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 4px 10px 4px 4px;
+  color: #fff;
+  text-align: left;
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.admin__account-btn:hover,
+.admin__account-btn[aria-expanded='true'] {
+  background: rgb(255 255 255 / 0.12);
+  border-color: rgb(255 255 255 / 0.28);
+}
+
+.admin__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--color-brand);
+  border-radius: 50%;
+}
+
+.admin__account-text { display: grid; gap: 2px; line-height: 1.1; }
+
+.admin__account-name {
+  max-width: 220px;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.admin__role {
+  justify-self: start;
+  padding: 1px 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+}
+
+.admin__role--super { color: #fff; background: rgb(194 84 27 / 0.85); }
+.admin__role--staff { color: var(--color-ink-deep); background: #f0d9c8; }
+
+.admin__chevron { opacity: 0.7; }
+
+.admin__account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  display: grid;
+  width: max-content;
+  min-width: 240px;
+  max-width: min(320px, calc(100vw - 2 * var(--gutter)));
+  padding: var(--space-2);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.admin__account-head {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.admin__account-menu-name { overflow: hidden; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
+
+.admin__account-menu a,
+.admin__account-menu button {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.admin__account-menu a:hover,
+.admin__account-menu button:hover { background: var(--color-brand-tint); color: var(--color-brand-dark); }
+.admin__account-menu button { color: var(--color-danger); }
+
+@media (max-width: 640px) {
+  .admin__account-text,
+  .admin__chevron { display: none; }
+  .admin__account-btn { padding: 2px; }
+  .admin__brand-name { font-size: var(--text-sm); }
+}
+
+.admin__brand-short { display: none; }
+
+@media (max-width: 480px) {
+  .admin__brand-full { display: none; }
+  .admin__brand-short { display: inline; }
 }
 
 .admin__sidebar {
@@ -88,9 +266,9 @@
 
   .admin__sidebar {
     position: sticky;
-    top: 56px;
+    top: var(--admin-bar);
     display: block;
-    height: calc(100vh - 56px);
+    height: calc(100vh - var(--admin-bar));
     overflow-y: auto;
     border-bottom: 0;
     border-right: 1px solid var(--color-line);
@@ -274,6 +452,7 @@
 @keyframes a-spin { to { transform: rotate(360deg); } }
 
 .a-alert { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); font-size: var(--text-sm); border-radius: var(--radius-sm); border: 1px solid transparent; margin-bottom: var(--space-3); }
+.a-alert__body { flex: 1; min-width: 0; line-height: 1.5; }
 .a-alert--error { background: #fdecea; color: var(--color-danger); border-color: #f5c6c1; }
 .a-alert--success { background: #e7f4ec; color: var(--color-success); border-color: #c4e3cf; }
 .a-alert--warn { background: #fdf3e1; color: #8a5a12; border-color: #f2dcb0; }
@@ -326,8 +505,6 @@
 .a-bar__track { height: 10px; background: var(--color-surface-warm); border-radius: var(--radius-pill); overflow: hidden; }
 .a-bar__fill { height: 100%; background: var(--color-brand); border-radius: inherit; }
 
-.admin__user { display: flex; gap: var(--space-3); align-items: center; font-size: var(--text-sm); }
-.admin__user button { background: rgb(255 255 255 / 0.12); color: #fff; border: 1px solid rgb(255 255 255 / 0.25); border-radius: var(--radius-pill); padding: 2px 12px; cursor: pointer; }
 .admin__nav-group { padding: var(--space-3) var(--space-3) var(--space-1); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-ink-muted); }
 
 .score-input[aria-invalid='true'] { border-color: var(--color-danger); background: #fdecea; }
@@ -340,3 +517,65 @@
 
 .print-only { display: none; }
 @media print { .print-only { display: table-cell; } }
+
+/* Settings → Staff users: role comparison */
+.role-guide {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  margin-bottom: var(--space-5);
+}
+
+.role-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.role-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+
+.role-pill {
+  padding: 3px 12px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+}
+
+.role-pill--super_admin { color: #fff; background: var(--color-brand); }
+.role-pill--staff { color: var(--color-ink-deep); background: #f0d9c8; }
+
+.role-card__summary { font-weight: 600; }
+
+.role-card__list { display: grid; gap: var(--space-2); padding: 0; list-style: none; font-size: var(--text-sm); }
+.role-card__list li { display: flex; gap: var(--space-2); align-items: flex-start; }
+.role-card__list svg { flex: none; margin-top: 2px; color: var(--color-success); }
+
+.role-card__cannot {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-line);
+}
+
+.role-card__cannot-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.role-card__cannot ul { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0; list-style: none; }
+.role-card__cannot li {
+  padding: 2px 10px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+  background: var(--color-surface-warm);
+  border-radius: var(--radius-pill);
+}

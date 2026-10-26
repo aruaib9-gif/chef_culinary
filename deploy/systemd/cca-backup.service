@@ -1,0 +1,7 @@
+[Unit]
+Description=Chefs Culinary Academy database backup
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cca-backup

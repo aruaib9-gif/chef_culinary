@@ -19,6 +19,7 @@ import Contact from './pages/Contact.jsx'
 import InfoPage from './pages/InfoPage.jsx'
 import NotFound from './pages/NotFound.jsx'
 const Verify = lazy(() => import('./pages/Verify.jsx'))
+const Legal = lazy(() => import('./pages/legal/Legal.jsx'))
 import RequireAuth from './components/RequireAuth.jsx'
 const Login = lazy(() => import('./pages/portal/Login.jsx'))
 const Signup = lazy(() => import('./pages/portal/Signup.jsx'))
@@ -56,6 +57,7 @@ export default function App() {
         <Route path="programmes" element={<Programmes />} />
         <Route path="programmes/:slug" element={<ProgrammeDetail />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="legal/:slug" element={<Legal />} />
         {infoPages.map((page) => (
           <Route key={page.path} path={page.path} element={<InfoPage {...page} />} />
         ))}

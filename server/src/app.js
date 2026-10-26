@@ -19,9 +19,11 @@ export const app = express()
 app.set('trust proxy', 1) // behind Render's load balancer
 app.disable('x-powered-by')
 app.use(helmet())
+// In development any localhost port is allowed, since Vite picks a new port when one is busy.
+const devOrigin = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/
 app.use(
   cors({
-    origin: config.corsOrigins,
+    origin: (origin, cb) => cb(null, !origin || config.corsOrigins.includes(origin) || (!config.isProd && devOrigin.test(origin))),
     credentials: false, // bearer tokens, no cookies
     exposedHeaders: ['Content-Disposition'],
     maxAge: 600,
