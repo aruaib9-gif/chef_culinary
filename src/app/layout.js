@@ -8,7 +8,14 @@ export const metadata = {
   metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
   title: { default: 'The Chefs Culinary Academy | Culinary School in Port Harcourt', template: '%s | The Chefs Culinary Academy' },
   description: 'Professional cookery programmes, short courses and sponsored cohorts at The Chefs Culinary Academy, Port Harcourt.',
-  icons: { icon: '/favicon.svg' },
+  icons: {
+    icon: [
+      { url: '/icon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     type: 'website',
     siteName: 'The Chefs Culinary Academy',
