@@ -1,4 +1,5 @@
 'use client'
+import NextLink from 'next/link'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams, safeNext } from '@/lib/router'
 import { useAuth } from '../lib/auth.jsx'
@@ -55,6 +56,7 @@ export default function Login() {
             <Field label="Password"><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} autoComplete="current-password" required /></Field>
             <button className="a-btn" type="submit" disabled={busy || !form.email || !form.password}>{busy ? 'Signing in…' : 'Sign in'}</button>
             <Link to="/forgot-password" className="a-meta">Forgot password?</Link>
+            <p className="a-meta">Student or applicant? <NextLink href="/portal/login">Sign in to the student portal</NextLink></p>
           </>
         )}
       </form>
