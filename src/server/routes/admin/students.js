@@ -91,7 +91,7 @@ students.get('/export.csv', async (req, res) => {
 
 students.get('/import-template.csv', (req, res) => {
   sendCsv(res, 'student-import-template.csv', [
-    { first_name: 'Ada', last_name: 'Okafor', email: 'ada@example.com', phone: '08012345678', gender: 'Female', date_of_birth: '2001-04-12', programme: 'professional-cookery', cohort: 'PC Jan 2027', guardian_name: 'Chidi Okafor', guardian_phone: '08098765432', student_number: '' },
+    { first_name: 'Ada', last_name: 'Okafor', email: 'ada@example.com', phone: '08012345678', gender: 'Female', date_of_birth: '2001-04-12', programme: 'african-and-asian-cuisine', cohort: 'PC Jan 2027', guardian_name: 'Chidi Okafor', guardian_phone: '08098765432', student_number: '' },
   ])
 })
 

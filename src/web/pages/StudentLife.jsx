@@ -24,7 +24,7 @@ const facilities = [
 ]
 
 // Kit is grounded in what the professional programme fee covers.
-const kit = getProgramme('professional-cookery')?.feeCovers ?? []
+const kit = getProgramme('diploma-in-culinary-arts')?.feeCovers ?? []
 
 const events = [
   { title: 'Live cooking demos', body: 'Watch chef-instructors at work, then recreate the dish yourself.' },

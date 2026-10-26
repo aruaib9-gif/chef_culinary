@@ -101,7 +101,7 @@ export default function Events() {
               programme.
             </Reveal>
             <Reveal className="ev-highlight__actions" delay={0.15}>
-              <Button to="/programmes/short-courses">View short courses</Button>
+              <Button to="/programmes">View short courses</Button>
               <Button to="/contact" variant="outline">Enquire about dates</Button>
             </Reveal>
           </div>

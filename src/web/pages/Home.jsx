@@ -30,13 +30,13 @@ const stats = [
   { value: '—', label: 'Students trained' },
   { value: '—', label: 'Years of excellence' },
   { value: '—', label: 'Graduates placed' },
-  { value: '3', label: 'Programme pathways' },
+  { value: '8', label: 'Programmes' },
 ]
 
 const reasons = [
   { title: 'Hands-on kitchens', body: 'Practical classes in professional kitchens, three days a week.' },
-  { title: 'Experienced chef-instructors', body: 'Learn Nigerian, African, Asian and European cuisines from working chefs.' },
-  { title: 'Career-ready', body: 'Food costing, inventory, entrepreneurship and restaurant operations included.' },
+  { title: 'Experienced chef-instructors', body: 'Learn African and Asian cuisine, pastry, cakes and mixology from working chefs.' },
+  { title: 'Accredited', body: 'Affiliated with SUPA ITF and an accredited NABTEB centre.' },
 ]
 
 const gallery = [
@@ -63,8 +63,8 @@ const heroHighlights = [
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></svg>,
   },
   {
-    title: '3 programme pathways',
-    sub: 'Full-time & short courses',
+    title: '8 programmes',
+    sub: '1-week classes to a diploma',
     icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z" /></svg>,
   },
 ]
@@ -78,7 +78,7 @@ const heroSlides = [
 
 // How enrolment works
 const journey = [
-  { step: '01', title: 'Apply online', body: 'Submit your application in minutes and tell us the pathway you want.' },
+  { step: '01', title: 'Apply', body: 'Apply online or collect a form at our campus, then meet our admissions team.' },
   { step: '02', title: 'Train hands-on', body: 'Practical and theory classes Mon, Wed & Fri in professional kitchens.' },
   { step: '03', title: 'Get certified', body: 'Complete assessments and project work to earn your certificate.' },
   { step: '04', title: 'Launch your career', body: 'Food costing, business and entrepreneurship skills to start out strong.' },
@@ -86,23 +86,23 @@ const journey = [
 
 // Curriculum highlights (from the professional programme course list)
 const curriculum = [
-  { title: 'Cookery & food safety', body: 'Kitchen fundamentals, hygiene and safe food handling.' },
-  { title: 'Food production', body: 'Nigerian, African, Asian and European techniques, hands-on.' },
-  { title: 'Inventory management', body: 'Stock control, purchasing and reducing waste.' },
+  { title: 'Food safety', body: 'Kitchen fundamentals, hygiene and safe food handling.' },
+  { title: 'Food production', body: 'African and Asian techniques, pastry and cakes, hands-on.' },
   { title: 'Food costing', body: 'Price dishes for profit and manage margins.' },
+  { title: 'Plating and styling', body: 'Present dishes beautifully, from plate to photo.' },
+  { title: 'Inventory management', body: 'Stock control, purchasing and reducing waste.' },
   { title: 'Entrepreneurship', body: 'Build and run your own food business.' },
-  { title: 'Restaurant management', body: 'Operations, service and leading a kitchen team.' },
 ]
 
-const cuisines = ['Nigerian', 'African', 'Asian', 'European']
+const cuisines = ['African', 'Asian', 'Pastry & cakes', 'Mixology']
 
 const faqs = [
-  { q: 'How long are the programmes?', a: 'Between 8 and 16 weeks depending on your pathway — short courses run 8 weeks, sponsored cohorts 12 weeks and the full professional programme 16 weeks.' },
-  { q: 'When are classes held?', a: 'Classes hold three days a week — Monday, Wednesday and Friday — combining theory and practical kitchen sessions.' },
-  { q: 'Do I need prior experience?', a: 'No. Our programmes start from the fundamentals, so complete beginners are welcome alongside those looking to sharpen their skills.' },
-  { q: 'How much does it cost?', a: 'Fees are shared on request. Send us an enquiry or start your application and our team will get back to you with the details.' },
-  { q: "What's included?", a: 'The professional programme covers your handbook and workbook, uniform, class assignments and project work.' },
-  { q: 'Where is the academy located?', a: 'Chimatem Complex, Psychiatric Road, Rumigbo/Rumuola, Port Harcourt.' },
+  { q: 'How long are the programmes?', a: 'From 1 week (Spice and Herbs) to 36 weeks (Diploma in Culinary Arts). Our main courses run 6 to 16 weeks.' },
+  { q: 'Do I need prior experience?', a: 'No. Our programmes are open to beginners and to those improving existing skills, taking you from the basics to professional mastery.' },
+  { q: 'How much does it cost?', a: 'Tuition ranges from ₦100,000 to ₦1,550,000, plus 7.5% VAT and a ₦15,000 registration fee. Each programme page shows the full total.' },
+  { q: "What's included?", a: 'Course fees cover your school uniform, student handbook and learning materials for the whole programme.' },
+  { q: 'Will I receive a certificate?', a: 'Yes. You receive a professional certificate on successful completion; the Diploma programme leads to a diploma qualification.' },
+  { q: 'Where is the academy located?', a: 'No. 17 Chimatem Complex, along Ohiamini/Psychiatric Road, beside Wingate Hotel, Rumigbo/Rumuola, Port Harcourt.' },
 ]
 
 export default function Home() {
@@ -234,7 +234,7 @@ export default function Home() {
           <Reveal className="section__header">
             <span className="eyebrow">Programmes</span>
             <h2>Find your pathway</h2>
-            <p>From a full professional cookery programme to focused baking and pastry workshops.</p>
+            <p>From a one-week spice and herbs class to our 36-week Diploma in Culinary Arts.</p>
           </Reveal>
           <motion.div
             className="grid"
@@ -243,7 +243,7 @@ export default function Home() {
             whileInView={reduce ? undefined : 'show'}
             viewport={{ once: true, margin: '-60px' }}
           >
-            {programmes.map((p) => (
+            {programmes.filter((p) => p.type !== 'short').slice(0, 6).map((p) => (
               <motion.div key={p.slug} variants={gridItem}>
                 <ProgrammeCard programme={p} />
               </motion.div>
@@ -340,7 +340,7 @@ export default function Home() {
         <Reveal className="container cuisines__content">
           <span className="eyebrow">Cuisines</span>
           <h2>Cuisines you'll master</h2>
-          <p>Train across four culinary traditions — from local favourites to international menus.</p>
+          <p>From local African delicacies to Asian menus, fine pastry, cakes and mixology.</p>
           <ul className="cuisines__list">
             {cuisines.map((c) => (
               <li key={c}>{c}</li>
@@ -400,7 +400,7 @@ export default function Home() {
         <div className="cta__overlay" aria-hidden="true" />
         <Reveal className="container cta__content" y={32}>
           <h2>Join the next cohort</h2>
-          <p>Applications are open for our professional cookery programmes and short courses.</p>
+          <p>Intakes run in January, April, July and October. Your future in the kitchen begins here.</p>
           <div className="cta__actions">
             <Button to="/admissions/apply">Apply now</Button>
             <Button to="/contact" variant="light">Ask a question</Button>

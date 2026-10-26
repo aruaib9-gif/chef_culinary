@@ -2,7 +2,7 @@
 import { useParams } from '@/lib/router'
 import { programmeTypes } from '@cca/shared/programmes'
 import { getCourse } from '@cca/shared/courses'
-import { formatFee } from '@cca/shared/format'
+import { formatFee, feeBreakdown } from '@cca/shared/format'
 import { useProgrammes } from '../lib/useProgrammes.js'
 import { date } from '../lib/format.js'
 import PageHeader from '../components/ui/PageHeader.jsx'
@@ -17,6 +17,7 @@ export default function ProgrammeDetail() {
   const programme = programmes.find((p) => p.slug === slug)
   if (!programme) return loaded ? <NotFound /> : <div className="container section"><Loading /></div>
 
+  const fees = feeBreakdown(programme.fee)
   const courses = programme.courseDetails ?? programme.courses.map(getCourse).filter(Boolean)
   const sections = [
     ['About the programme', programme.description],
@@ -32,9 +33,10 @@ export default function ProgrammeDetail() {
       <section className="section">
         <div className="container stack">
           <dl className="grid">
-            <div><dt className="muted">Duration</dt><dd>{programme.durationWeeks ? `${programme.durationWeeks} weeks` : '—'}</dd></div>
+            <div><dt className="muted">Duration</dt><dd>{programme.durationWeeks ? `${programme.durationWeeks} ${programme.durationWeeks === 1 ? 'week' : 'weeks'}` : '—'}</dd></div>
             <div><dt className="muted">Schedule</dt><dd>{programme.schedule ?? '—'}</dd></div>
-            <div><dt className="muted">Fee</dt><dd>{formatFee(programme.fee)}</dd></div>
+            <div><dt className="muted">Tuition</dt><dd>{programme.fee == null ? 'Contact us for the fee' : formatFee(programme.fee)}</dd></div>
+            {fees && <div><dt className="muted">Total with VAT and registration</dt><dd>{formatFee(fees.total)}</dd></div>}
             {programme.intakeDates && <div><dt className="muted">Intakes</dt><dd>{programme.intakeDates}</dd></div>}
             {programme.applicationDeadline && <div><dt className="muted">Application deadline</dt><dd>{date(programme.applicationDeadline)}</dd></div>}
             {programme.certificateAwarded && <div><dt className="muted">Certificate awarded</dt><dd>{programme.certificateAwarded}</dd></div>}
@@ -44,6 +46,23 @@ export default function ProgrammeDetail() {
             <>
               <h2>Instalment plan</h2>
               <ul>{programme.instalmentPlan.map((i) => <li key={i.label}>{i.label}: {i.percent}% ({formatFee(Math.round((programme.fee * i.percent) / 100))}){i.dueWeeks ? `, due in week ${i.dueWeeks}` : ', due at enrolment'}</li>)}</ul>
+            </>
+          )}
+
+          {fees && (
+            <>
+              <h2>Fees</h2>
+              <div className="table-wrap">
+                <table>
+                  <tbody>
+                    <tr><td>Tuition</td><td>{formatFee(fees.tuition)}</td></tr>
+                    <tr><td>VAT (7.5%)</td><td>{formatFee(fees.vat)}</td></tr>
+                    <tr><td>Registration fee</td><td>{formatFee(fees.registration)}</td></tr>
+                    <tr><th>Total</th><th>{formatFee(fees.total)}</th></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="muted">Instalment plans are available to indigenous students only. Instalments not paid on the due date attract 10% interest.</p>
             </>
           )}
 

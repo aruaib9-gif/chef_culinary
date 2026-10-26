@@ -13,6 +13,7 @@
     "db:local": "node scripts/local-mongo.js",
     "seed": "node scripts/seed.js",
     "seed:demo": "SEED_DEMO=1 node scripts/seed.js",
+    "catalogue:sync": "node scripts/sync-catalogue.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {

@@ -239,3 +239,25 @@
   gap: var(--space-3);
   margin-top: var(--space-6);
 }
+
+/* ---------- Fee table ---------- */
+.adm-fees td,
+.adm-fees th {
+  white-space: nowrap;
+}
+
+.adm-fees td:first-child {
+  white-space: normal;
+  min-width: 14rem;
+}
+
+.adm-fees__notes {
+  max-width: 760px;
+  margin: var(--space-5) auto 0;
+}
+
+.adm-fees__notes li {
+  display: list-item;
+  margin-left: var(--space-5);
+  list-style: disc;
+}

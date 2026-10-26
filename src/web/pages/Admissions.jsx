@@ -3,42 +3,58 @@ import { motion, useReducedMotion } from 'framer-motion'
 import PageHeader from '../components/ui/PageHeader.jsx'
 import Button from '../components/ui/Button.jsx'
 import Reveal from '../components/ui/Reveal.jsx'
+import { Link } from '@/lib/router'
+import { formatFee, feeBreakdown } from '@cca/shared/format'
+import { useProgrammes } from '../lib/useProgrammes.js'
 import './Admissions.css'
 
 const EASE = [0.22, 1, 0.36, 1]
 
 const requirements = [
-  'Open to beginners and working cooks alike — no prior experience required.',
-  'A genuine passion for food and a willingness to learn.',
-  'Availability for practical classes on Monday, Wednesday & Friday.',
-  'A valid means of identification and recent passport photographs.',
+  'Minimum age of 16 (applicants under 18 need parental or guardian consent)',
+  'Basic ability to read, write and understand instructional materials',
+  'No prior cooking experience — beginners are welcome',
+  'Registration fee of ₦15,000',
 ]
 
 const documents = [
-  'Your completed online application',
-  'A valid ID (NIN, voter’s card, driver’s licence or passport)',
-  'Two recent passport photographs',
-  'A sponsorship or organisation letter (for sponsored cohorts)',
+  'Two (2) passport photographs',
+  'A written statement of purpose or application letter',
+  'Your previous educational qualification',
+  'A recent Hepatitis B test result',
 ]
 
 const steps = [
-  { step: '01', title: 'Choose your programme', body: 'Pick the pathway that matches your goals — full-time, sponsored cohort or a short course.' },
-  { step: '02', title: 'Apply online', body: 'Complete the application form and upload your documents. It only takes a few minutes.' },
-  { step: '03', title: 'We review & reach out', body: 'Our team reviews your application and contacts you with the next steps and fees.' },
-  { step: '04', title: 'Confirm your place', body: 'Secure your spot, complete enrolment and get ready for your first class.' },
+  { step: '01', title: 'Get the application form', body: 'Apply online, collect the official form at our campus, or request a digital copy by WhatsApp or email.' },
+  { step: '02', title: 'Consultation', body: 'Book a brief interview and facility tour with our admissions team to choose the right course.' },
+  { step: '03', title: 'Register', body: 'Submit your completed form, the ₦15,000 registration fee and your documents.' },
+  { step: '04', title: 'Orientation', body: 'Start at the next intake with facility induction, food safety and equipment familiarisation.' },
+]
+
+const feeNotes = [
+  'Registration fee: ₦15,000.',
+  'VAT of 7.5% applies to all course fees.',
+  'Course fees cover your school uniform, student handbook and learning materials for the entire programme.',
+  'Instalment plans are available to indigenous students only. Instalments not paid on the due date attract 10% interest.',
 ]
 
 const faqs = [
-  { q: 'Do I need prior experience to apply?', a: 'No. Our programmes start from the fundamentals, so complete beginners are welcome alongside those sharpening existing skills.' },
-  { q: 'What documents do I need?', a: 'A completed application, a valid means of ID, recent passport photographs, and — for sponsored trainees — a letter from your organisation or scheme.' },
-  { q: 'How much are the fees?', a: 'Fees vary by programme and are shared on request. Send an enquiry or start your application and our team will send you the details.' },
-  { q: 'Are payment arrangements available?', a: 'Flexible payment arrangements may be available depending on the programme. Ask our team when you apply.' },
-  { q: 'When can I start?', a: 'New cohorts run throughout the year with classes on Monday, Wednesday and Friday. Contact us for the next available start date.' },
-  { q: 'Can my employer or scheme sponsor me?', a: 'Yes. We run dedicated sponsored cohorts for organisations and schemes such as SUPA ITF. Reach out and we’ll set it up.' },
+  { q: 'Do I need any cooking experience to enrol?', a: 'No. Our programmes are open to beginners and to those who want to improve their existing skills, taking you from foundational basics to professional mastery.' },
+  { q: 'What do I need to apply?', a: 'Two passport photographs, a written statement of purpose or application letter, your previous educational qualification, a recent Hepatitis B test result and the ₦15,000 registration fee.' },
+  { q: 'How much do the courses cost?', a: 'Tuition ranges from ₦100,000 to ₦1,000,000 for short and main courses, and ₦1,550,000 for the Diploma in Culinary Arts. The fee table on this page shows each total including VAT and registration.' },
+  { q: 'Is VAT included in the fees?', a: 'No. VAT of 7.5% applies to course fees, and the registration fee is separate. The fee table shows the exact total for each programme.' },
+  { q: 'Do you accept instalment payments?', a: 'An instalment plan is available to indigenous students only; it is not available to international students. Any instalment not paid on its due date attracts 10 percent interest.' },
+  { q: 'Can I pay now and resume later?', a: 'Yes. You can secure your admission, pay your tuition and resume later, but not later than the next intake.' },
+  { q: 'Can I work and do a programme with you?', a: 'Yes. In Port Harcourt we run morning and afternoon classes; our Lagos branch also offers evening classes. Check the programme schedule when you apply.' },
+  { q: 'Will I receive a certificate?', a: 'Yes. On successful completion of your programme and final assessments you receive a professional certificate. The Diploma programme leads to a diploma qualification.' },
+  { q: 'Do you help graduates find jobs?', a: 'We go the extra mile to secure jobs for our students, and all alumni receive our job opportunity alerts.' },
+  { q: 'Can I learn pastry or baking without a full culinary course?', a: 'Yes. Pastry and Mixology and Cake Crafting and Design are standalone 12-week courses.' },
+  { q: 'Do you have programmes for children?', a: 'Yes. Our Kitchen Bootcamp for Kids is a 1-month programme for young children during the long summer holiday.' },
 ]
 
 export default function Admissions() {
   const reduce = useReducedMotion()
+  const { programmes } = useProgrammes()
 
   const gridContainer = reduce
     ? {}
@@ -52,7 +68,7 @@ export default function Admissions() {
       <PageHeader
         eyebrow="Admissions"
         title="How to apply"
-        intro="Joining The Chefs Culinary Academy is simple. Here's who can apply, how it works, and what to expect."
+        intro="Joining The Chefs Culinary Academy is simple. Here's who can apply, what it costs, and what to expect."
       />
 
       {/* Steps */}
@@ -62,6 +78,7 @@ export default function Admissions() {
             <span className="eyebrow">The process</span>
             <h2>From application to first class</h2>
             <p>Four straightforward steps to your place in the kitchen.</p>
+            <p><Button to="/admissions/apply">Apply online</Button></p>
           </Reveal>
           <motion.ol
             className="adm-steps"
@@ -115,26 +132,58 @@ export default function Admissions() {
         </div>
       </section>
 
-      {/* Fees & sponsorships */}
+      {/* Fees */}
+      <section className="section">
+        <div className="container">
+          <Reveal className="section__header section__header--center">
+            <span className="eyebrow">Fees and payment</span>
+            <h2>What it costs</h2>
+            <p>Totals include 7.5% VAT on tuition and the ₦15,000 registration fee.</p>
+          </Reveal>
+          <Reveal className="table-wrap adm-fees">
+            <table>
+              <thead>
+                <tr><th>Programme</th><th>Duration</th><th>Tuition</th><th>VAT (7.5%)</th><th>Registration</th><th>Total</th></tr>
+              </thead>
+              <tbody>
+                {programmes.map((p) => {
+                  const f = feeBreakdown(p.fee)
+                  return (
+                    <tr key={p.slug}>
+                      <td><Link to={`/programmes/${p.slug}`}>{p.name}</Link></td>
+                      <td>{p.durationWeeks} {p.durationWeeks === 1 ? 'week' : 'weeks'}</td>
+                      {f
+                        ? <><td>{formatFee(f.tuition)}</td><td>{formatFee(f.vat)}</td><td>{formatFee(f.registration)}</td><td><strong>{formatFee(f.total)}</strong></td></>
+                        : <td colSpan={4} className="muted">Contact us for the fee</td>}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </Reveal>
+          <ul className="adm-fees__notes">
+            {feeNotes.map((n) => <li key={n}>{n}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* Sponsorships */}
       <section className="section">
         <div className="container adm-two">
-          <Reveal className="adm-card">
-            <h2>Fees &amp; payment</h2>
+          <Reveal className="adm-card adm-card--brand">
+            <h2>Corporate sponsorships</h2>
             <p>
-              Fees vary by programme and are shared on request. For the professional programme, the
-              fee covers your handbook and workbook, uniform, class assignments and project work.
+              We welcome students sponsored by hotels, restaurants and corporate organisations. Invoices can
+              be billed directly to the sponsoring organisation.
             </p>
-            <p className="muted">Flexible payment arrangements may be available — ask our team when you apply.</p>
-            <Button to="/contact" variant="outline">Request fees</Button>
-          </Reveal>
-          <Reveal className="adm-card adm-card--brand" delay={0.1}>
-            <h2>Scholarships &amp; sponsorships</h2>
-            <p>
-              We run dedicated sponsored cohorts for organisations and training schemes such as
-              SUPA ITF. Employers and schemes can sponsor trainees through our programmes.
-            </p>
-            <p>Interested in sponsoring a cohort or applying as a sponsored trainee?</p>
             <Button to="/contact" variant="light">Talk to us</Button>
+          </Reveal>
+          <Reveal className="adm-card" delay={0.1}>
+            <h2>Merit-based assistance</h2>
+            <p>
+              Partial scholarships may be announced from time to time on our social media pages for
+              exceptional individuals who show high potential but face financial constraints.
+            </p>
           </Reveal>
         </div>
       </section>
@@ -149,8 +198,9 @@ export default function Admissions() {
             <div>
               <h2>Intakes &amp; schedule</h2>
               <p>
-                New cohorts run throughout the year, with classes held three days a week —
-                Monday, Wednesday &amp; Friday. Contact us for the next available start date.
+                We run rolling admission, with major intakes in January, April, July and October. Each
+                intake begins with an orientation covering facility induction, food safety and equipment
+                familiarisation.
               </p>
             </div>
           </Reveal>

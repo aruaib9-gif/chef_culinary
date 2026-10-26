@@ -148,6 +148,7 @@ export default function Contact() {
                 <div>
                   <strong>Address</strong>
                   <span>{site.address}</span>
+                  <span className="muted">{site.landmark}</span>
                 </div>
               </li>
               <li>

@@ -6,7 +6,7 @@ import { useAuth, useLookups } from '../lib/auth.jsx'
 import { money, fileSize } from '../lib/format.js'
 import { PageHeader, Loading, ErrorBox, Badge, Modal, Field, Checkbox, Tabs, Notice, useAction } from '../components/ui.jsx'
 
-const TYPES = { professional: 'Professional', cohort: 'Sponsored cohort', short: 'Short course' }
+const TYPES = { short: 'Short course', main: 'Main course', diploma: 'Diploma', professional: 'Professional', cohort: 'Sponsored cohort' }
 
 // Programmes (fees, instalments, page content) and courses (spec §5, §9.3).
 export default function Programmes() {
@@ -81,7 +81,7 @@ function ProgrammeModal({ programme: p, onClose, onSaved }) {
   const { courses, reloadLookups } = useLookups()
   const { isSuper } = useAuth()
   const [form, setForm] = useState({
-    slug: p.slug ?? '', name: p.name ?? '', type: p.type ?? 'professional', summary: p.summary ?? '', description: p.description ?? '',
+    slug: p.slug ?? '', name: p.name ?? '', type: p.type ?? 'main', summary: p.summary ?? '', description: p.description ?? '',
     durationWeeks: p.duration_weeks ?? '', schedule: p.schedule ?? '', fee: p.fee_kobo != null ? p.fee_kobo / 100 : '',
     applicationFee: p.application_fee_kobo ? p.application_fee_kobo / 100 : '', feeCovers: (p.fee_covers ?? []).join('\n'),
     instalmentPlan: p.instalment_plan ?? [], intakeDates: p.intake_dates ?? '', applicationDeadline: p.application_deadline ?? '',
@@ -113,7 +113,7 @@ function ProgrammeModal({ programme: p, onClose, onSaved }) {
         <ErrorBox error={action.error} />
         <div className="a-form__row">
           <Field label="Name" required error={action.errors.name}><input value={form.name} onChange={set('name')} /></Field>
-          <Field label="URL slug" required error={action.errors.slug} hint="e.g. professional-cookery"><input value={form.slug} onChange={set('slug')} /></Field>
+          <Field label="URL slug" required error={action.errors.slug} hint="e.g. pastry-and-mixology"><input value={form.slug} onChange={set('slug')} /></Field>
           <Field label="Type"><select value={form.type} onChange={set('type')}>{Object.entries(TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></Field>
         </div>
         <Field label="Short description" error={action.errors.summary}><input value={form.summary} onChange={set('summary')} /></Field>

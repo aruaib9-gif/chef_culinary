@@ -23,6 +23,7 @@ export async function seed({ demo = false, log = console.log } = {}) {
         $setOnInsert: {
           slug: p.slug, name: p.name, type: p.type, summary: p.summary, duration_weeks: p.durationWeeks, schedule: p.schedule,
           fee_kobo: p.fee == null ? null : p.fee * 100, fee_covers: p.feeCovers, is_published: true, sort_order: i,
+          intake_dates: p.intakeDates ?? null, entry_requirements: p.entryRequirements ?? null, certificate_awarded: p.certificateAwarded ?? null,
           course_ids: p.courses.map((slug) => courseIds.get(slug)).filter(Boolean),
         },
       },
@@ -54,8 +55,8 @@ async function seedDemo(log) {
   if (await Cohort.exists({ name: 'PC Demo Cohort' })) return log('demo data already present')
   await withTransaction(async (session) => {
     const prog = await Programme.findOneAndUpdate(
-      { slug: 'professional-cookery' },
-      { $set: { fee_kobo: 45000000, instalment_plan: [{ label: 'Deposit', percent: 60, dueWeeks: 0 }, { label: 'Balance', percent: 40, dueWeeks: 8 }] } },
+      { slug: 'african-and-asian-cuisine' },
+      { $set: { instalment_plan: [{ label: 'Deposit', percent: 60, dueWeeks: 0 }, { label: 'Balance', percent: 40, dueWeeks: 8 }] } },
       { returnDocument: 'after', session },
     ).lean()
     const start = new Date(Date.now() - 21 * 86_400_000)

@@ -4,6 +4,7 @@ export const courses = [
   { id: 'food-production', name: 'Food Production', type: 'Theory and practical' },
   { id: 'inventory-management', name: 'Inventory Management', type: 'Theory' },
   { id: 'food-costing', name: 'Food Costing and Portioning', type: 'Theory' },
+  { id: 'food-plating', name: 'Food Plating and Styling', type: 'Practical' },
   { id: 'entrepreneurship', name: 'Entrepreneurship', type: 'Theory' },
   { id: 'restaurant-management', name: 'Restaurant Management and Operations', type: 'Theory' },
 ]

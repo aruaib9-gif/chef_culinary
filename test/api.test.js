@@ -76,7 +76,7 @@ test('applicant signs up and saves a draft', async () => {
 
   const draft = await call('/applications/current', {
     token: state.applicantToken, method: 'PUT',
-    body: { programme: 'professional-cookery', step: 1, personal: { fullName: 'Tunde Bello', dob: '2000-02-02', phone: '08031234567', state: 'Rivers', city: 'Port Harcourt' }, guardian: { name: 'Mrs Bello', phone: '08030000000' }, background: { education: 'Secondary / SSCE', experience: 'Home cook' } },
+    body: { programme: 'african-and-asian-cuisine', step: 1, personal: { fullName: 'Tunde Bello', dob: '2000-02-02', phone: '08031234567', state: 'Rivers', city: 'Port Harcourt' }, guardian: { name: 'Mrs Bello', phone: '08030000000' }, background: { education: 'Secondary / SSCE', experience: 'Home cook' } },
   })
   assert.equal(draft.status, 200, JSON.stringify(draft.data))
   assert.equal(draft.data.status, 'draft')
@@ -124,7 +124,7 @@ test('admin signs in; students cannot use the admin portal', async () => {
 
 test('admin creates a cohort, admits and enrols the applicant', async () => {
   const lookups = await call('/admin/lookups', { token: state.adminToken })
-  const prog = lookups.data.programmes.find((p) => p.slug === 'professional-cookery')
+  const prog = lookups.data.programmes.find((p) => p.slug === 'african-and-asian-cuisine')
   const cohort = await call('/admin/cohorts', { token: state.adminToken, method: 'POST', body: { programmeId: prog.id, name: `Test cohort ${run}`, startsOn: '2026-01-05', endsOn: '2026-04-30', schedule: 'Mon, Wed, Fri', feeKobo: 30000000 } })
   assert.equal(cohort.status, 201, JSON.stringify(cohort.data))
   state.cohortId = cohort.data.id

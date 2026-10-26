@@ -2,7 +2,10 @@
 export const site = {
   name: 'The Chefs Culinary Academy',
   legalName: 'The Chefs Culinary Arts Ltd Academy',
-  address: 'Chimatem Complex, Psychiatric Road, Rumigbo/Rumuola, Port Harcourt',
+  address: 'No. 17 Chimatem Complex, Psychiatric Road, Rumigbo/Rumuola, Port Harcourt',
+  landmark: 'Along Ohiamini/Psychiatric Road, beside Wingate Hotel',
+  tagline: 'Quality Chefs, Healthy Life',
+  affiliations: 'Affiliated with SUPA ITF and an accredited NABTEB centre',
   phone: '08117248206',
   phoneIntl: '2348117248206',
   emails: ['thechefsculinary@gmail.com', 'chefacademyphc@gmail.com'],

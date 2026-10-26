@@ -11,20 +11,20 @@ import './Programmes.css'
 
 const EASE = [0.22, 1, 0.36, 1]
 
-const filters = [{ value: 'all', label: 'All programmes' },
-  ...Object.entries(programmeTypes).map(([value, label]) => ({ value, label }))]
 
 const includes = [
-  { title: 'Hands-on kitchens', body: 'Practical sessions in professional kitchens, three days a week.', icon: <path d="M7 21h10M6 13h12l-1 8H7zM8 13a4 4 0 118 0M12 5v4" /> },
+  { title: 'Hands-on kitchens', body: 'Practical sessions in fully equipped, stainless-steel kitchens.', icon: <path d="M7 21h10M6 13h12l-1 8H7zM8 13a4 4 0 118 0M12 5v4" /> },
   { title: 'Chef-led instruction', body: 'Learn directly from working chef-instructors.', icon: <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6zM9 12l2 2 4-4" /> },
-  { title: 'Theory + practical', body: 'A balanced curriculum from food safety to food costing.', icon: <path d="M4 5h16M4 12h16M4 19h10" /> },
-  { title: 'Certificate on completion', body: 'A verifiable Certificate of Completion to show employers.', icon: <path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 21l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" /> },
+  { title: 'Uniform and materials', body: 'Your uniform, student handbook and learning materials are included.', icon: <path d="M4 5h16M4 12h16M4 19h10" /> },
+  { title: 'Certificate on completion', body: 'Every course ends with a certificate employers can verify.', icon: <path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 21l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" /> },
 ]
 
 export default function Programmes() {
   const reduce = useReducedMotion()
   const { programmes } = useProgrammes()
   const [type, setType] = useState('all')
+  const filters = [{ value: 'all', label: 'All programmes' },
+    ...Object.entries(programmeTypes).filter(([value]) => programmes.some((p) => p.type === value)).map(([value, label]) => ({ value, label }))]
   const visible = type === 'all' ? programmes : programmes.filter((p) => p.type === type)
 
   const gridContainer = reduce
@@ -39,7 +39,7 @@ export default function Programmes() {
       <PageHeader
         eyebrow="Programmes"
         title="Programmes & courses"
-        intro="Every programme lists its duration, schedule, fees and curriculum. Choose the pathway that fits you."
+        intro="From a one-week crash course to a full diploma. Fees are tuition; 7.5% VAT and a ₦15,000 registration fee apply."
       />
 
       <section className="section">

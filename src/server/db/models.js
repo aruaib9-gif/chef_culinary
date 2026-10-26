@@ -80,7 +80,7 @@ const instalment = new Schema({ label: String, percent: Number, dueWeeks: Number
 export const Programme = model('Programme', new Schema({
   slug: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  type: { type: String, required: true, enum: ['professional', 'cohort', 'short'] },
+  type: { type: String, required: true, enum: ['short', 'main', 'diploma', 'professional', 'cohort'] },
   summary: String,
   description: String,
   duration_weeks: Number,

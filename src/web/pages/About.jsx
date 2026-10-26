@@ -15,21 +15,24 @@ const teamD = '/images/IMG_1667.JPG'
 const EASE = [0.22, 1, 0.36, 1]
 
 const values = [
-  { title: 'Quality', body: 'We hold every dish — and every lesson — to a professional standard.' },
-  { title: 'Hands-on learning', body: 'Real kitchens, real ingredients, real practice, three days a week.' },
-  { title: 'Healthy living', body: 'Good food is healthy food. We teach nutrition and safe food handling.' },
-  { title: 'Entrepreneurship', body: 'We equip graduates to build and run their own food businesses.' },
-  { title: 'Community', body: 'A supportive cohort and alumni network that lasts beyond graduation.' },
-  { title: 'Integrity', body: 'Honest teaching, fair fees and certificates employers can verify.' },
+  { title: 'Excellence', body: 'We hold ourselves and our students to high standards in every dish and every lesson.' },
+  { title: 'Passion', body: 'We believe great cooking starts with a genuine love for food.' },
+  { title: 'Hygiene and safety', body: 'Clean, safe kitchens are the foundation of professional practice.' },
+  { title: 'Creativity', body: 'We encourage students to explore flavours, techniques and presentation.' },
+  { title: 'Integrity', body: 'We are honest, fair and professional in all our dealings.' },
+  { title: 'Practical learning', body: 'Skills are built by doing, so our training is hands-on.' },
+  { title: 'Growth', body: "We support every student's journey from beginner to professional." },
 ]
 
+const coreSkills = ['Food safety', 'Food production', 'Food costing', 'Food plating and styling']
+
 const facilities = [
-  'Professional teaching kitchens with hands-on workstations',
-  'Live demonstration stations for chef-led sessions',
-  'Practical classes three days a week — Mon, Wed & Fri',
-  'Food safety and hygiene standards throughout',
-  'A full curriculum covering theory and practical',
-  'Certificate of Completion on graduation',
+  'Dedicated theory classrooms for culinary principles, food safety and hospitality management',
+  'Fully equipped, stainless-steel practical kitchens',
+  'Professional chef uniforms for every practical session',
+  'Hands-on practice from your first week',
+  'Mentorship from working chef-instructors',
+  'A certificate on completion of every course',
 ]
 
 const team = [
@@ -53,8 +56,8 @@ export default function About() {
     <>
       <PageHeader
         eyebrow="About us"
-        title="Our story"
-        intro="The Chefs Culinary Academy trains the next generation of professional chefs in Port Harcourt — hands-on, practical and taught to an international standard."
+        title="Where professional chefs are raised"
+        intro="A premier culinary institution in the heart of Port Harcourt, built on the principle of “Quality Chefs, Healthy Life”."
       />
 
       {/* Story */}
@@ -66,21 +69,20 @@ export default function About() {
           </Reveal>
           <div className="about-split__body">
             <Reveal as="span" className="eyebrow">Who we are</Reveal>
-            <Reveal as="h2" delay={0.05}>A culinary school built around real kitchens</Reveal>
+            <Reveal as="h2" delay={0.05}>Professional mastery and personal transformation</Reveal>
             <Reveal as="p" delay={0.1}>
-              The Chefs Culinary Academy is a professional culinary school based in Port Harcourt,
-              Nigeria. We turn a passion for food into a profession — training aspiring and practising
-              cooks into confident, career-ready chefs.
+              The Chefs Culinary Academy believes the kitchen is a space for both professional mastery and
+              personal transformation, guided by our philosophy that “cooking and baking is both physical
+              and mental therapy”.
             </Reveal>
             <Reveal as="p" delay={0.15}>
-              Our programmes blend hands-on kitchen practice with solid culinary theory, spanning
-              Nigerian and African classics through to Asian and European techniques. Students learn
-              from working chef-instructors in professional kitchens, three days a week.
+              We train aspiring chefs, home cooks, bakers and food entrepreneurs through hands-on programmes
+              in a real kitchen environment, so you graduate ready to cook, create and earn.
             </Reveal>
             <Reveal as="p" delay={0.2}>
-              More than cooking, we teach the business of food — costing, inventory, entrepreneurship
-              and restaurant operations — so our graduates are ready to work or build something of
-              their own.
+              Whether you want a quick skills boost or a full professional qualification, we have a
+              programme that fits your goals — from a one-week spice and herbs class to our 36-week Diploma
+              in Culinary Arts.
             </Reveal>
           </div>
         </div>
@@ -99,15 +101,16 @@ export default function About() {
             <motion.div className="about-vm__card" variants={gridItem}>
               <span className="about-vm__label">Vision</span>
               <p>
-                To be a leading culinary academy in Nigeria, raising a generation of skilled,
-                enterprising chefs who shape the future of food.
+                To be the leading culinary academy in Nigeria, known for raising professional chefs who
+                set the standard for skill, creativity and excellence in the food industry.
               </p>
             </motion.div>
             <motion.div className="about-vm__card" variants={gridItem}>
               <span className="about-vm__label">Mission</span>
               <p>
-                To deliver practical, affordable and industry-relevant culinary training that turns a
-                love of food into a profession and a sustainable business.
+                To train skilled, confident and responsible culinary professionals through practical,
+                quality instruction, preparing every student to succeed in kitchens, businesses and
+                communities across Nigeria and beyond.
               </p>
             </motion.div>
           </motion.div>
@@ -119,7 +122,7 @@ export default function About() {
         <div className="container">
           <Reveal className="section__header section__header--center">
             <span className="eyebrow">What we stand for</span>
-            <h2>Our values</h2>
+            <h2>Our core values</h2>
             <p>The principles behind every class, dish and graduate.</p>
           </Reveal>
           <motion.div
@@ -146,11 +149,16 @@ export default function About() {
             <img src={facilitiesPhoto} alt="Students cooking in a practical class" loading="lazy" />
           </Reveal>
           <div className="about-split__body">
-            <Reveal as="span" className="eyebrow">Facilities</Reveal>
-            <Reveal as="h2" delay={0.05}>Where you'll learn</Reveal>
+            <Reveal as="span" className="eyebrow">Our approach to training</Reveal>
+            <Reveal as="h2" delay={0.05}>From the classroom to the kitchen</Reveal>
             <Reveal as="p" delay={0.1}>
-              Our training happens in professional kitchens equipped for real, hands-on work — not just
-              lectures. Every student gets time at the stove.
+              We bridge the gap between passion and professional expertise. Training begins in theory
+              classrooms, where you build a strong foundation, then moves into our practical kitchens, where
+              you bring that knowledge to life through rigorous hands-on practice.
+            </Reveal>
+            <Reveal as="p" delay={0.11}>
+              Whether you aspire to a global hospitality career or want to master local African delicacies,
+              we provide the tools, mentorship and environment to make it happen.
             </Reveal>
             <ul className="about-list">
               {facilities.map((f, i) => (
@@ -173,9 +181,12 @@ export default function About() {
             <span className="eyebrow">Our people</span>
             <h2>Learn from working chefs</h2>
             <p>
-              Our chef-instructors bring professional kitchen experience across Nigerian, African,
-              Asian and European cuisines — and a genuine commitment to seeing you succeed.
+              Our chef-instructors bring professional kitchen experience across African and Asian cuisine,
+              pastry, cakes and mixology — and a genuine commitment to seeing you succeed.
             </p>
+            <ul className="about-skills" aria-label="Core skills">
+              {coreSkills.map((k) => <li key={k}>{k}</li>)}
+            </ul>
           </Reveal>
           <motion.div
             className="about-team"
@@ -197,11 +208,11 @@ export default function About() {
       <section className="section section--warm">
         <div className="container">
           <Reveal className="about-note">
-            <h2>Certified, and verifiable</h2>
+            <h2>Affiliated, accredited and verifiable</h2>
             <p>
-              Graduates earn a Certificate of Completion they can proudly show employers — and which
-              employers can confirm through our certificate verification. We also run dedicated
-              sponsored cohorts for organisations and schemes such as SUPA ITF.
+              The Chefs Culinary Academy is affiliated with SUPA ITF and is an accredited NABTEB centre.
+              Every course ends with a certificate that employers can confirm through our online
+              certificate verification.
             </p>
             <div className="about-note__actions">
               <Button to="/verify" variant="outline">Verify a certificate</Button>
@@ -214,8 +225,8 @@ export default function About() {
       {/* CTA */}
       <section className="section">
         <Reveal className="container about-cta">
-          <h2>Come train with us</h2>
-          <p>Find us in Port Harcourt, or reach out — we'd love to hear from you.</p>
+          <h2>Start your culinary journey</h2>
+          <p>Your future in the kitchen begins here. Apply today and take the first step toward becoming a professional chef.</p>
           <div className="about-cta__actions">
             <Button to="/admissions/apply">Apply now</Button>
             <Button to="/contact" variant="light">Contact us</Button>

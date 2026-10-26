@@ -20,9 +20,9 @@ export default function ProgrammeCard({ programme }) {
       </div>
 
       <ul className="programme-card__meta">
-        <li><span className="programme-card__ico" aria-hidden="true">{icons.duration}</span>{programme.durationWeeks} weeks</li>
+        <li><span className="programme-card__ico" aria-hidden="true">{icons.duration}</span>{programme.durationWeeks} {programme.durationWeeks === 1 ? 'week' : 'weeks'}</li>
         <li><span className="programme-card__ico" aria-hidden="true">{icons.schedule}</span>{programme.schedule}</li>
-        <li><span className="programme-card__ico" aria-hidden="true">{icons.fee}</span>{formatFee(programme.fee)}</li>
+        <li><span className="programme-card__ico" aria-hidden="true">{icons.fee}</span>{programme.fee == null ? 'Contact us for the fee' : `${formatFee(programme.fee)} + VAT`}</li>
       </ul>
 
       <Button to={`/programmes/${programme.slug}`} variant="outline" block className="programme-card__btn">

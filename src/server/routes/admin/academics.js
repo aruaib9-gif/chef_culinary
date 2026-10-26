@@ -43,7 +43,7 @@ const instalment = z.object({ label: requiredText(60), percent: z.coerce.number(
 const programmeSchema = z.object({
   slug: z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Use lowercase letters, numbers and dashes').max(80),
   name: requiredText(160),
-  type: z.enum(['professional', 'cohort', 'short']),
+  type: z.enum(['short', 'main', 'diploma', 'professional', 'cohort']),
   summary: optionalText(500),
   description: optionalText(10000),
   durationWeeks: z.coerce.number().int().min(1).max(260).optional().nullable(),
