@@ -1,23 +1,36 @@
 {
   "name": "chefs-culinary-academy",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "server"
-  ],
   "engines": {
     "node": ">=20.12"
   },
   "scripts": {
-    "dev": "npm run dev --workspace server & npm run dev --workspace @cca/web & npm run dev --workspace @cca/admin & wait",
-    "dev:web": "npm run dev --workspace @cca/web",
-    "dev:admin": "npm run dev --workspace @cca/admin",
-    "dev:server": "npm run dev --workspace server",
-    "build": "npm run build:web && npm run build:admin",
-    "build:web": "npm run build --workspace @cca/web",
-    "build:admin": "npm run build --workspace @cca/admin",
-    "db:migrate": "npm run migrate --workspace server"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:local": "node scripts/local-mongo.js",
+    "seed": "node scripts/seed.js",
+    "seed:demo": "SEED_DEMO=1 node scripts/seed.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/s3-request-presigner": "^3.1156.0",
+    "bcryptjs": "^3.0.3",
+    "csv-parse": "^7.0.3",
+    "framer-motion": "^14.6.0",
+    "mongoose": "^9.11.4",
+    "next": "^16.4.3",
+    "nodemailer": "^10.2.1",
+    "pdfkit": "^0.20.2",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0"
   }
 }

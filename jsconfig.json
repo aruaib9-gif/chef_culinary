@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@cca/shared/grading-scheme": ["src/shared/gradingScheme.js"],
+      "@cca/shared/*": ["src/shared/*"]
+    }
+  }
+}

@@ -1,9 +1,0 @@
-[Unit]
-Description=Run CCA daily jobs at 08:00 Lagos time
-
-[Timer]
-OnCalendar=*-*-* 07:00:00 UTC
-Persistent=true
-
-[Install]
-WantedBy=timers.target

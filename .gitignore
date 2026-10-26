@@ -1,16 +1,18 @@
 node_modules
+.next
+out
 dist
-dist-ssr
 *.local
 .env
 .env.*
 !.env.example
 .DS_Store
 *.log
+.vercel
+# Local file storage used in development (STORAGE_DRIVER=local)
+.uploads
+# Local MongoDB data used by `npm run db:local`
+.mongo-data
 .vscode/*
 !.vscode/extensions.json
 .idea
-
-# VPS deploy settings written by deploy/setup-server.sh
-deploy/deploy.env
-deploy/cpanel/out/
