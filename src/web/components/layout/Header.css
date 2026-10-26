@@ -189,10 +189,37 @@
   }
 }
 
-/* Not enough room for a third button until wide screens; the footer and student login page also link to it. */
+/* Three buttons and ten links: between 1200px and 1535px the links and buttons shrink to fit. */
 @media (min-width: 1200px) and (max-width: 1535px) {
-  .site-nav__admin {
-    display: none;
+  .site-header__inner {
+    gap: var(--space-2);
+  }
+
+  .site-header__brand {
+    max-width: 10.5rem;
+    font-size: var(--text-sm);
+  }
+
+  .site-nav {
+    gap: var(--space-2);
+  }
+
+  .site-nav__links {
+    gap: 0;
+  }
+
+  .site-nav__links a {
+    padding-inline: 4px;
+    font-size: 13px;
+  }
+
+  .site-nav__actions {
+    gap: 6px;
+  }
+
+  .site-nav__actions .btn {
+    padding-inline: 10px;
+    font-size: 13px;
   }
 }
 
