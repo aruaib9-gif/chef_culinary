@@ -61,6 +61,10 @@ function s3() {
     endpoint: config.storage.endpoint,
     forcePathStyle: Boolean(config.storage.endpoint),
     credentials: { accessKeyId: config.storage.accessKeyId, secretAccessKey: config.storage.secretAccessKey },
+    // Without this the SDK signs a CRC32 of an empty body into presigned upload URLs, so the browser's real upload
+    // fails the check. Checksums only when an operation requires them (R2 and S3 both accept this).
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   })
   return s3client
 }
