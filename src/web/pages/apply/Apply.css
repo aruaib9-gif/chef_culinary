@@ -300,6 +300,7 @@
 
 .apply-file__name {
   flex: 1;
+  min-width: 0;
   font-size: var(--text-sm);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -463,3 +464,10 @@
   margin-top: var(--space-3);
   font-size: var(--text-base);
 }
+
+/* Grid items default to min-width: auto, so a long file name would widen the whole form on phones. */
+.apply-form > *,
+.apply-upload > * {
+  min-width: 0;
+}
+
