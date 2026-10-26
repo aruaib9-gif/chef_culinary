@@ -63,6 +63,7 @@ export default function Footer() {
                 <li key={item.to}><Link to={item.to}>{item.label}</Link></li>
               ))}
               <li><Link to="/verify">Verify a certificate</Link></li>
+              <li><Link to="/admin/login">Staff &amp; admin sign in</Link></li>
             </ul>
           </div>
 

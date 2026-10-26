@@ -47,6 +47,7 @@ export default function Header() {
             {user
               ? <Button to="/portal" variant="outline">My portal</Button>
               : <Button to="/portal/login" variant="outline">Student login</Button>}
+            <Button to="/admin/login" variant="outline" className="site-nav__admin">Admin login</Button>
             <Button to="/admissions/apply">Apply now</Button>
           </div>
         </nav>

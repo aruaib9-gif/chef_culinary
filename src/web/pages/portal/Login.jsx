@@ -73,6 +73,7 @@ export default function Login() {
                 <div className="auth-foot">
                   <Link to="/portal/forgot-password">Forgot your password?</Link>
                   <span>New applicant? <Link to={params.get('next') ? `/portal/signup?next=${encodeURIComponent(from)}` : '/portal/signup'}>Create an account</Link> to apply online.</span>
+                  <span>Staff member? <Link to="/admin/login">Sign in to the admin</Link>.</span>
                 </div>
               </>
             )}

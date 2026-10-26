@@ -188,3 +188,16 @@
     white-space: nowrap;
   }
 }
+
+/* Not enough room for a third button until wide screens; the footer and student login page also link to it. */
+@media (min-width: 1200px) and (max-width: 1535px) {
+  .site-nav__admin {
+    display: none;
+  }
+}
+
+@media (min-width: 1536px) {
+  .site-nav__actions .btn {
+    padding-inline: var(--space-2);
+  }
+}
