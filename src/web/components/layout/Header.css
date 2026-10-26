@@ -189,42 +189,15 @@
   }
 }
 
-/* Three buttons and ten links: between 1200px and 1535px the links and buttons shrink to fit. */
-@media (min-width: 1200px) and (max-width: 1535px) {
-  .site-header__inner {
-    gap: var(--space-2);
-  }
-
-  .site-header__brand {
-    max-width: 10.5rem;
-    font-size: var(--text-sm);
-  }
-
+/* Narrow desktops: tighten the ten nav links so the brand and both buttons fit. */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .site-header__inner,
   .site-nav {
     gap: var(--space-2);
-  }
-
-  .site-nav__links {
-    gap: 0;
   }
 
   .site-nav__links a {
     padding-inline: 4px;
     font-size: 13px;
-  }
-
-  .site-nav__actions {
-    gap: 6px;
-  }
-
-  .site-nav__actions .btn {
-    padding-inline: 10px;
-    font-size: 13px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .site-nav__actions .btn {
-    padding-inline: var(--space-2);
   }
 }
