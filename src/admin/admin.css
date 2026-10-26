@@ -394,6 +394,27 @@
 }
 
 /* ───────────── Admin UI kit ───────────── */
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { width: 100%; padding-right: 44px; }
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--color-ink-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.pw-toggle:hover, .pw-toggle[aria-pressed="true"] { color: var(--color-brand); }
+.pw-toggle:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 1px; }
+
 .muted { color: var(--color-ink-muted); }
 .a-meta { font-size: var(--text-xs); color: var(--color-ink-muted); }
 .a-stack { display: grid; gap: var(--space-4); }

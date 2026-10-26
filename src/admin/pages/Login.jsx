@@ -3,7 +3,7 @@ import NextLink from 'next/link'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams, safeNext } from '@/lib/router'
 import { useAuth } from '../lib/auth.jsx'
-import { Field, ErrorBox, Notice } from '../components/ui.jsx'
+import { Field, ErrorBox, Notice, PasswordInput } from '../components/ui.jsx'
 
 // Staff sign-in with optional emailed OTP (spec §12).
 export default function Login() {
@@ -53,7 +53,7 @@ export default function Login() {
         ) : (
           <>
             <Field label="Email"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} autoComplete="username" autoFocus required /></Field>
-            <Field label="Password"><input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} autoComplete="current-password" required /></Field>
+            <Field label="Password"><PasswordInput value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} autoComplete="current-password" required /></Field>
             <button className="a-btn" type="submit" disabled={busy || !form.email || !form.password}>{busy ? 'Signing in…' : 'Sign in'}</button>
             <Link to="/forgot-password" className="a-meta">Forgot password?</Link>
             <p className="a-meta">Student or applicant? <NextLink href="/portal/login">Sign in to the student portal</NextLink></p>

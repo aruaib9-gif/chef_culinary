@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from '@/lib/router'
 import { api } from '../lib/api.js'
-import { Field, ErrorBox, Notice } from '../components/ui.jsx'
+import { Field, ErrorBox, Notice, PasswordInput } from '../components/ui.jsx'
 
 export function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -56,9 +56,9 @@ export function ResetPassword() {
         <h1 style={{ fontSize: 'var(--text-2xl)' }}>{params.get('welcome') ? 'Set your password' : 'Choose a new password'}</h1>
         <ErrorBox error={state.error} />
         <Field label="New password" hint="At least 8 characters, with a letter and a number." error={state.error?.details?.password}>
-          <input type="password" value={pw.password} onChange={(e) => setPw({ ...pw, password: e.target.value })} autoComplete="new-password" required autoFocus />
+          <PasswordInput value={pw.password} onChange={(e) => setPw({ ...pw, password: e.target.value })} autoComplete="new-password" required autoFocus />
         </Field>
-        <Field label="Confirm password"><input type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} autoComplete="new-password" required /></Field>
+        <Field label="Confirm password"><PasswordInput value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} autoComplete="new-password" required /></Field>
         <button className="a-btn" type="submit" disabled={state.busy || !pw.password}>Save password</button>
       </form>
     </div>

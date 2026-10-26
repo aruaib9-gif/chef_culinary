@@ -5,7 +5,7 @@ import { useApi } from '../lib/useApi.js'
 import { api, fetchFile } from '../lib/api.js'
 import { useAuth } from '../lib/auth.jsx'
 import { dateTime, humanize } from '../lib/format.js'
-import { PageHeader, Loading, ErrorBox, Badge, Pagination, SearchInput, Modal, Field, Checkbox, Notice, Tabs, useAction } from '../components/ui.jsx'
+import { PageHeader, Loading, ErrorBox, Badge, Pagination, SearchInput, Modal, Field, Checkbox, Notice, Tabs, useAction, PasswordInput } from '../components/ui.jsx'
 
 // Settings (spec §9.5), staff accounts and roles (§9.1), audit trail (§9.6, §12).
 export default function Settings() {
@@ -308,9 +308,9 @@ function MyAccount() {
         <h2 className="a-section-title" style={{ margin: 0 }}>Change password</h2>
         {pwAction.ok && <Notice tone="success">Password changed. Your other sessions were signed out.</Notice>}
         <ErrorBox error={pwAction.error} />
-        <Field label="Current password" error={pwAction.errors.currentPassword}><input type="password" value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} autoComplete="current-password" /></Field>
-        <Field label="New password" error={pwAction.errors.newPassword} hint="At least 8 characters, with a letter and a number."><input type="password" value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} autoComplete="new-password" /></Field>
-        <Field label="Confirm new password" error={pw.confirm && pw.confirm !== pw.newPassword ? 'Does not match' : undefined}><input type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} autoComplete="new-password" /></Field>
+        <Field label="Current password" error={pwAction.errors.currentPassword}><PasswordInput value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} autoComplete="current-password" /></Field>
+        <Field label="New password" error={pwAction.errors.newPassword} hint="At least 8 characters, with a letter and a number."><PasswordInput value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} autoComplete="new-password" /></Field>
+        <Field label="Confirm new password" error={pw.confirm && pw.confirm !== pw.newPassword ? 'Does not match' : undefined}><PasswordInput value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} autoComplete="new-password" /></Field>
         <div className="a-form__foot">
           <button type="button" className="a-btn" disabled={pwAction.busy || !pw.newPassword || pw.confirm !== pw.newPassword} onClick={async () => {
             if (await pwAction.run(() => api('/auth/change-password', { method: 'POST', body: { currentPassword: pw.currentPassword, newPassword: pw.newPassword } }))) { setPw({ currentPassword: '', newPassword: '', confirm: '' }); refresh() }
@@ -322,7 +322,7 @@ function MyAccount() {
         <p className="muted">When on, a 6-digit code is emailed to {user.email} each time you sign in.</p>
         {faAction.ok && <Notice tone="success">Updated.</Notice>}
         <ErrorBox error={faAction.error} />
-        <Field label="Confirm with your password"><input type="password" value={twoFa} onChange={(e) => setTwoFa(e.target.value)} autoComplete="current-password" /></Field>
+        <Field label="Confirm with your password"><PasswordInput value={twoFa} onChange={(e) => setTwoFa(e.target.value)} autoComplete="current-password" /></Field>
         <div className="a-form__foot">
           <button type="button" className="a-btn" disabled={faAction.busy || !twoFa} onClick={async () => { if (await faAction.run(() => api('/auth/two-factor', { method: 'POST', body: { enabled: !user.twoFactorEnabled, password: twoFa } }))) { setTwoFa(''); refresh() } }}>{user.twoFactorEnabled ? 'Turn off' : 'Turn on'}</button>
         </div>
