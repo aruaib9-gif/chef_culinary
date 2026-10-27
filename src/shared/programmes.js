@@ -8,7 +8,7 @@ export const programmeTypes = {
   cohort: 'Sponsored cohort',
 }
 
-const schedule = 'Mon, Wed, Fri · morning or afternoon'
+const schedule = 'Mon, Wed, Fri · mornings'
 const intakes = 'January, April, July and October (rolling admission)'
 const feeCovers = ['School uniform', 'Student handbook', 'Learning materials for the whole programme']
 const entry = [

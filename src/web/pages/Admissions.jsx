@@ -45,7 +45,7 @@ const faqs = [
   { q: 'Is VAT included in the fees?', a: 'No. VAT of 7.5% applies to course fees, and the registration fee is separate. The fee table shows the exact total for each programme.' },
   { q: 'Do you accept instalment payments?', a: 'An instalment plan is available to indigenous students only; it is not available to international students. Any instalment not paid on its due date attracts 10 percent interest.' },
   { q: 'Can I pay now and resume later?', a: 'Yes. You can secure your admission, pay your tuition and resume later, but not later than the next intake.' },
-  { q: 'Can I work and do a programme with you?', a: 'Yes. In Port Harcourt we run morning and afternoon classes; our Lagos branch also offers evening classes. Check the programme schedule when you apply.' },
+  { q: 'Can I work and do a programme with you?', a: 'Our classes run in the morning only, on Monday, Wednesday and Friday, so many students fit them around afternoon or evening work.' },
   { q: 'Will I receive a certificate?', a: 'Yes. On successful completion of your programme and final assessments you receive a professional certificate. The Diploma programme leads to a diploma qualification.' },
   { q: 'Do you help graduates find jobs?', a: 'We go the extra mile to secure jobs for our students, and all alumni receive our job opportunity alerts.' },
   { q: 'Can I learn pastry or baking without a full culinary course?', a: 'Yes. Pastry and Mixology and Cake Crafting and Design are standalone 12-week courses.' },

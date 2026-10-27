@@ -15,13 +15,10 @@ const teamD = '/images/IMG_1667.JPG'
 const EASE = [0.22, 1, 0.36, 1]
 
 const values = [
-  { title: 'Excellence', body: 'We hold ourselves and our students to high standards in every dish and every lesson.' },
-  { title: 'Passion', body: 'We believe great cooking starts with a genuine love for food.' },
-  { title: 'Hygiene and safety', body: 'Clean, safe kitchens are the foundation of professional practice.' },
-  { title: 'Creativity', body: 'We encourage students to explore flavours, techniques and presentation.' },
+  { title: 'Hospitality', body: 'We welcome every student and guest warmly, and teach the care that great service is built on.' },
+  { title: 'Accountability', body: 'We take responsibility for our teaching, our kitchens and the success of every student.' },
+  { title: 'Trust', body: 'Students, parents and employers can rely on us to do what we say.' },
   { title: 'Integrity', body: 'We are honest, fair and professional in all our dealings.' },
-  { title: 'Practical learning', body: 'Skills are built by doing, so our training is hands-on.' },
-  { title: 'Growth', body: "We support every student's journey from beginner to professional." },
 ]
 
 const coreSkills = ['Food safety', 'Food production', 'Food costing', 'Food plating and styling']
@@ -101,16 +98,14 @@ export default function About() {
             <motion.div className="about-vm__card" variants={gridItem}>
               <span className="about-vm__label">Vision</span>
               <p>
-                To be the leading culinary academy in Nigeria, known for raising professional chefs who
-                set the standard for skill, creativity and excellence in the food industry.
+                Raising chefs that will affect the world positively.
               </p>
             </motion.div>
             <motion.div className="about-vm__card" variants={gridItem}>
               <span className="about-vm__label">Mission</span>
               <p>
-                To train skilled, confident and responsible culinary professionals through practical,
-                quality instruction, preparing every student to succeed in kitchens, businesses and
-                communities across Nigeria and beyond.
+                To become the number one culinary school whose goal is to produce chefs that will be
+                recognised through quality meals.
               </p>
             </motion.div>
           </motion.div>
