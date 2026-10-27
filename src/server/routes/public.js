@@ -1,6 +1,7 @@
 // Unauthenticated endpoints: public settings and certificate / result verification (spec §9.3, §11).
 import { Certificate, DocumentVerification, Student, Programme } from '../db/models.js'
 import { getSettings, publicSettingKeys } from '../lib/settings.js'
+import { listGallery } from '../lib/gallery.js'
 import { Router, rateLimit, badRequest, notFoundError } from '../http.js'
 
 export const publicRoutes = new Router()
@@ -11,6 +12,12 @@ publicRoutes.get('/settings', async (req, res) => {
   const all = await getSettings()
   res.set('Cache-Control', 'public, max-age=60')
   res.json(Object.fromEntries(publicSettingKeys.map((k) => [k, all[k]])))
+})
+
+// Published gallery photos for the website, in display order.
+publicRoutes.get('/gallery', async (req, res) => {
+  const rows = await listGallery()
+  res.json(rows.map((r) => ({ id: String(r._id), src: r.src, caption: r.caption, category: r.category })))
 })
 
 const verifyLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 60 })

@@ -1,55 +1,36 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { galleryCategories, builtInPhotos } from '@cca/shared/gallery'
 import PageHeader from '../components/ui/PageHeader.jsx'
+import { api } from '../lib/api.js'
 import './Gallery.css'
-
-const img1663 = '/images/IMG_1663.JPG'
-const img1664 = '/images/IMG_1664.JPG'
-const img1665 = '/images/IMG_1665.JPG'
-const img1666 = '/images/IMG_1666.JPG'
-const img1667 = '/images/IMG_1667.JPG'
-const img1668 = '/images/IMG_1668.JPG'
-const img1669 = '/images/IMG_1669.JPG'
-const img1670 = '/images/IMG_1670.JPG'
-const img1671 = '/images/IMG_1671.JPG'
-const img1672 = '/images/IMG_1672.JPG'
-const chef1 = '/images/Chef1.jpg'
-const chef2 = '/images/chef2.jpg'
-const chef3 = '/images/chef3.jpg'
 
 const EASE = [0.22, 1, 0.36, 1]
 
-const categories = [
-  { value: 'all', label: 'All' },
-  { value: 'classes', label: 'Classes' },
-  { value: 'dishes', label: 'Student dishes' },
-  { value: 'graduation', label: 'Graduations' },
-  { value: 'events', label: 'Events' },
-]
+const categories = [{ value: 'all', label: 'All' }, ...Object.entries(galleryCategories).map(([value, label]) => ({ value, label }))]
 
-const photos = [
-  { src: img1663, cat: 'events', alt: 'Chefs at a cooking demonstration' },
-  { src: chef1, cat: 'classes', alt: 'Students cooking in a practical class' },
-  { src: chef2, cat: 'dishes', alt: 'A spread of dishes prepared at the academy' },
-  { src: img1665, cat: 'classes', alt: 'Chef instructor in the academy kitchen' },
-  { src: chef3, cat: 'graduation', alt: 'Graduates celebrating with their certificates' },
-  { src: img1666, cat: 'classes', alt: 'Two trainee chefs in the teaching kitchen' },
-  { src: img1672, cat: 'events', alt: 'A cohort of chefs at a cooking demonstration' },
-  { src: img1668, cat: 'classes', alt: 'A graduate chef in front of the academy mural' },
-  { src: img1671, cat: 'classes', alt: 'A cohort of chefs at a class session' },
-  { src: img1664, cat: 'events', alt: 'A full cohort of chefs at the academy' },
-  { src: img1667, cat: 'classes', alt: 'Instructors and students at the academy' },
-  { src: img1669, cat: 'classes', alt: 'A chef at the academy service counter' },
-  { src: img1670, cat: 'classes', alt: 'A chef at a cooking station' },
-]
+// Shown only if the live gallery can't be reached.
+const fallback = builtInPhotos.map((p) => ({ id: p.src, src: p.src, caption: p.caption, category: p.category }))
 
 export default function Gallery() {
   const reduce = useReducedMotion()
   const [cat, setCat] = useState('all')
   const [active, setActive] = useState(null) // index into the visible list
+  const [photos, setPhotos] = useState(null) // null while loading
 
-  const visible = cat === 'all' ? photos : photos.filter((p) => p.cat === cat)
+  // Photos are managed in Admin → Website gallery.
+  useEffect(() => {
+    let alive = true
+    api('/public/gallery')
+      .then((rows) => { if (alive) setPhotos(Array.isArray(rows) ? rows : fallback) })
+      .catch(() => { if (alive) setPhotos(fallback) })
+    return () => { alive = false }
+  }, [])
+
+  const list = photos ?? []
+  const usedCategories = categories.filter((c) => c.value === 'all' || list.some((p) => p.category === c.value))
+  const visible = cat === 'all' ? list : list.filter((p) => p.category === cat)
 
   const close = useCallback(() => setActive(null), [])
   const show = useCallback((dir) => {
@@ -92,7 +73,7 @@ export default function Gallery() {
       <section className="section">
         <div className="container">
           <div className="gal-filter" role="tablist" aria-label="Filter photos">
-            {categories.map((c) => (
+            {usedCategories.map((c) => (
               <button
                 key={c.value}
                 type="button"
@@ -106,6 +87,7 @@ export default function Gallery() {
             ))}
           </div>
 
+          {photos && visible.length === 0 && <p className="muted">No photos here yet.</p>}
           <motion.div
             key={cat}
             className="gal-grid"
@@ -115,14 +97,14 @@ export default function Gallery() {
           >
             {visible.map((p, i) => (
               <motion.button
-                key={p.src}
+                key={p.id}
                 type="button"
                 className="gal-item"
                 variants={gridItem}
                 onClick={() => setActive(i)}
-                aria-label={`View: ${p.alt}`}
+                aria-label={p.caption ? `View: ${p.caption}` : 'View photo'}
               >
-                <img src={p.src} alt={p.alt} loading="lazy" />
+                <img src={p.src} alt={p.caption} loading="lazy" />
                 <span className="gal-item__zoom" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3M11 8v6M8 11h6" /></svg>
                 </span>
@@ -157,14 +139,14 @@ export default function Gallery() {
             </button>
             <motion.figure
               className="gal-lightbox__figure"
-              key={visible[active].src}
+              key={visible[active].id}
               initial={reduce ? false : { opacity: 0, scale: 0.97 }}
               animate={reduce ? false : { opacity: 1, scale: 1 }}
               transition={{ duration: 0.25, ease: EASE }}
               onClick={(e) => e.stopPropagation()}
             >
-              <img src={visible[active].src} alt={visible[active].alt} />
-              <figcaption>{visible[active].alt}</figcaption>
+              <img src={visible[active].src} alt={visible[active].caption} />
+              {visible[active].caption && <figcaption>{visible[active].caption}</figcaption>}
             </motion.figure>
             <button
               className="gal-lightbox__nav gal-lightbox__nav--next"

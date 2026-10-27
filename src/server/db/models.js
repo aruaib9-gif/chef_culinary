@@ -408,6 +408,17 @@ export const MessageLog = model('MessageLog', new Schema({
   sent_by: { type: Id, ref: 'User', default: null },
 }, created))
 
+// Website gallery. Either an uploaded image (file_id) or one of the photos bundled with the site (static_src).
+export const GalleryPhoto = model('GalleryPhoto', new Schema({
+  file_id: { type: Id, ref: 'File', default: null },
+  static_src: { type: String, default: null },
+  caption: { type: String, default: '' },
+  category: { type: String, enum: ['classes', 'dishes', 'graduation', 'events'], default: 'classes' },
+  is_published: { type: Boolean, default: true },
+  sort_order: { type: Number, default: 0, index: true },
+  created_by: { type: Id, ref: 'User', default: null },
+}, ts))
+
 export const Setting = model('Setting', new Schema({
   _id: String, // setting key
   value: { type: Schema.Types.Mixed, required: true },
@@ -429,7 +440,7 @@ export const AuditLog = model('AuditLog', auditSchema)
 export async function syncIndexes() {
   const all = [User, Session, AuthToken, RateLimit, Counter, File, Programme, Course, GradingScheme, Cohort, Student, Application,
     Result, ResultCorrection, DocumentVerification, Invoice, Payment, SponsorInvoice, Attendance, TimetableEntry, Material,
-    Assignment, Submission, Announcement, StudentRequest, Feedback, Certificate, Lead, MessageLog, Setting, AuditLog]
+    Assignment, Submission, Announcement, StudentRequest, Feedback, Certificate, Lead, MessageLog, GalleryPhoto, Setting, AuditLog]
   await Promise.all(all.map(async (m) => {
     await m.createCollection().catch(() => {})
     await m.createIndexes()

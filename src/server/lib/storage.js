@@ -29,6 +29,7 @@ export const PURPOSES = {
   material: { types: MATERIAL_TYPES, roles: ['super_admin', 'staff'], maxBytes: 10 * 1024 * 1024 },
   course_outline: { types: MATERIAL_TYPES, roles: ['super_admin', 'staff'], maxBytes: 10 * 1024 * 1024 },
   payment_proof: { types: DOC_TYPES, roles: ['super_admin'], maxBytes: 5 * 1024 * 1024 },
+  gallery_photo: { types: IMAGE_TYPES, roles: ['super_admin', 'staff'], maxBytes: 10 * 1024 * 1024 },
 }
 
 // ── Type sniffing (magic bytes) ──────────────────────────────────────────────
@@ -106,13 +107,13 @@ async function presignPut(key, contentType) {
   return getSignedUrl(s3(), new PutObjectCommand({ Bucket: config.storage.bucket, Key: key, ContentType: contentType }), { expiresIn: 15 * 60 })
 }
 
-async function presignGet(key, filename, mimeType, inline) {
+async function presignGet(key, filename, mimeType, inline, expiresIn = 5 * 60) {
   const disposition = `${inline ? 'inline' : 'attachment'}; filename="${filename.replace(/"/g, '')}"`
-  if (isLocal()) return `/api/uploads/local/${localToken(key, 'get', 5 * 60)}?d=${encodeURIComponent(disposition)}&t=${encodeURIComponent(mimeType)}`
+  if (isLocal()) return `/api/uploads/local/${localToken(key, 'get', expiresIn)}?d=${encodeURIComponent(disposition)}&t=${encodeURIComponent(mimeType)}`
   return getSignedUrl(
     s3(),
     new GetObjectCommand({ Bucket: config.storage.bucket, Key: key, ResponseContentDisposition: disposition, ResponseContentType: mimeType }),
-    { expiresIn: 5 * 60 },
+    { expiresIn },
   )
 }
 
@@ -227,6 +228,13 @@ export async function deleteFile(fileId) {
   if (!fileId) return
   const f = await File.findByIdAndDelete(fileId).lean()
   if (f) await removeObject(f.key)
+}
+
+/** Signed inline URLs for several files at once (e.g. gallery images), as a Map of fileId → URL. */
+export async function signedUrls(fileIds, { expiresIn = 60 * 60 } = {}) {
+  const files = await File.find({ _id: { $in: fileIds.filter(Boolean) }, status: 'ready' }).lean()
+  const pairs = await Promise.all(files.map(async (f) => [String(f._id), await presignGet(f.key, f.filename, f.mime_type, true, expiresIn)]))
+  return new Map(pairs)
 }
 
 /** Sends a file by redirecting to a short-lived signed download URL (permission checks happen before this). */

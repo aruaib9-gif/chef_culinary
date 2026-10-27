@@ -18,6 +18,7 @@ export const adminNav = [
   { group: 'Communication' },
   { to: '/messaging', label: 'Announcements & messaging' },
   { to: '/requests', label: 'Requests & feedback' },
+  { to: '/gallery', label: 'Website gallery' },
   { group: 'Management' },
   { to: '/reports', label: 'Reports' },
   { to: '/settings', label: 'Settings & users' },

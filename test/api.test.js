@@ -367,6 +367,42 @@ test('direct uploads: signed upload, type check, attach, download', async () => 
   assert.equal(own.status, 201)
 })
 
+test('website gallery: built-in photos, admin upload, hide, reorder, delete', async () => {
+  const initial = await call('/public/gallery')
+  assert.equal(initial.status, 200)
+  assert.ok(initial.data.length >= 10, 'bundled photos are copied in on first use')
+
+  const notAllowed = await call('/uploads', { token: state.studentToken, method: 'POST', body: { filename: 'x.png', contentType: 'image/png', size: PNG.length, purpose: 'gallery_photo' } })
+  assert.equal(notAllowed.status, 403, 'students cannot upload gallery photos')
+  const pdf = await call('/uploads', { token: state.adminToken, method: 'POST', body: { filename: 'x.pdf', contentType: 'application/pdf', size: PDF.length, purpose: 'gallery_photo' } })
+  assert.equal(pdf.status, 400, 'gallery takes images only')
+
+  const up = await call('/uploads', { token: state.adminToken, method: 'POST', body: { filename: 'plating.png', contentType: 'image/png', size: PNG.length, purpose: 'gallery_photo' } })
+  await call(up.data.uploadUrl, { method: 'PUT', raw: PNG, headers: { 'Content-Type': 'image/png' } })
+  await call(`/uploads/${up.data.fileId}/complete`, { token: state.adminToken, method: 'POST' })
+  const added = await call('/admin/gallery', { token: state.adminToken, method: 'POST', body: { fileId: up.data.fileId, caption: 'Plating class', category: 'dishes' } })
+  assert.equal(added.status, 201, JSON.stringify(added.data))
+
+  const pub = await call('/public/gallery')
+  assert.equal(pub.data[0].id, added.data.id, 'new photos go first')
+  assert.equal(pub.data[0].caption, 'Plating class')
+  const img = await call(pub.data[0].src)
+  assert.equal(img.status, 200)
+  assert.ok(img.data.equals(PNG), 'the image link serves the uploaded file')
+
+  await call(`/admin/gallery/${added.data.id}/move`, { token: state.adminToken, method: 'POST', body: { direction: 'down' } })
+  assert.equal((await call('/public/gallery')).data[1].id, added.data.id)
+
+  const hidden = await call(`/admin/gallery/${added.data.id}`, { token: state.adminToken, method: 'PATCH', body: { isPublished: false } })
+  assert.equal(hidden.data.caption, 'Plating class', 'hiding keeps the caption')
+  assert.ok(!(await call('/public/gallery')).data.some((p) => p.id === added.data.id), 'hidden photos are not public')
+  assert.ok((await call('/admin/gallery', { token: state.adminToken })).data.some((p) => p.id === added.data.id && !p.is_published))
+
+  const del = await call(`/admin/gallery/${added.data.id}`, { token: state.adminToken, method: 'DELETE' })
+  assert.equal(del.status, 200)
+  assert.equal((await call('/admin/gallery', { token: state.adminToken })).data.length, initial.data.length)
+})
+
 test('certificates: issue, download, public verification, revoke', async () => {
   const cert = await call('/admin/certificates', { token: state.adminToken, method: 'POST', body: { studentId: state.studentId } })
   assert.equal(cert.status, 201, JSON.stringify(cert.data))
