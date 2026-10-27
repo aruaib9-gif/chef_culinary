@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import NextLink from 'next/link'
 import { Link, NavLink, useLocation, useNavigate } from '@/lib/router'
 import { adminNav } from '../nav.js'
 import { useAuth } from '../lib/auth.jsx'
@@ -36,7 +37,14 @@ export default function AdminLayout({ children }) {
             </span>
           </Link>
         </div>
-        <AccountMenu user={user} isSuper={isSuper} />
+        <div className="admin__topbar-right">
+          {/* Next.js link, not the admin router's: that would resolve "/" to the dashboard. */}
+          <NextLink href="/" className="admin__site-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+            <span className="admin__site-link-text">Back to website</span>
+          </NextLink>
+          <AccountMenu user={user} isSuper={isSuper} />
+        </div>
       </header>
       <div className="admin__body">
         <nav id="admin-nav" className="admin__sidebar" data-open={open} aria-label="Admin">
