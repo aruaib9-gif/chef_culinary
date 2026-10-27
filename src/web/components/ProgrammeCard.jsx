@@ -1,6 +1,6 @@
 'use client'
 import { programmeTypes } from '@cca/shared/programmes'
-import { formatFee } from '@cca/shared/format'
+import { formatFee, feeBreakdown } from '@cca/shared/format'
 import Button from './ui/Button.jsx'
 import './ProgrammeCard.css'
 
@@ -22,7 +22,7 @@ export default function ProgrammeCard({ programme }) {
       <ul className="programme-card__meta">
         <li><span className="programme-card__ico" aria-hidden="true">{icons.duration}</span>{programme.durationWeeks} {programme.durationWeeks === 1 ? 'week' : 'weeks'}</li>
         <li><span className="programme-card__ico" aria-hidden="true">{icons.schedule}</span>{programme.schedule}</li>
-        <li><span className="programme-card__ico" aria-hidden="true">{icons.fee}</span>{programme.fee == null ? 'Contact us for the fee' : `${formatFee(programme.fee)} + VAT`}</li>
+        <li><span className="programme-card__ico" aria-hidden="true">{icons.fee}</span>{programme.fee == null ? 'Contact us for the fee' : `${formatFee(feeBreakdown(programme.fee).total)} total, incl. VAT`}</li>
       </ul>
 
       <Button to={`/programmes/${programme.slug}`} variant="outline" block className="programme-card__btn">

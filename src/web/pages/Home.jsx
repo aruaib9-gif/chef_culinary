@@ -99,7 +99,7 @@ const cuisines = ['African', 'Asian', 'Pastry & cakes', 'Mixology']
 const faqs = [
   { q: 'How long are the programmes?', a: 'From 1 week (Spice and Herbs) to 36 weeks (Diploma in Culinary Arts). Our main courses run 6 to 16 weeks.' },
   { q: 'Do I need prior experience?', a: 'No. Our programmes are open to beginners and to those improving existing skills, taking you from the basics to professional mastery.' },
-  { q: 'How much does it cost?', a: 'Tuition ranges from ₦100,000 to ₦1,550,000, plus 7.5% VAT and a ₦15,000 registration fee. Each programme page shows the full total.' },
+  { q: 'How much does it cost?', a: 'Total fees, including VAT and registration, range from ₦122,500 to ₦1,681,250. Each programme page shows the full breakdown.' },
   { q: "What's included?", a: 'Course fees cover your school uniform, student handbook and learning materials for the whole programme.' },
   { q: 'Will I receive a certificate?', a: 'Yes. You receive a professional certificate on successful completion; the Diploma programme leads to a diploma qualification.' },
   { q: 'Where is the academy located?', a: 'No. 17 Chimatem Complex, along Ohiamini/Psychiatric Road, beside Wingate Hotel, Rumigbo/Rumuola, Port Harcourt.' },

@@ -41,8 +41,8 @@ const feeNotes = [
 const faqs = [
   { q: 'Do I need any cooking experience to enrol?', a: 'No. Our programmes are open to beginners and to those who want to improve their existing skills, taking you from foundational basics to professional mastery.' },
   { q: 'What do I need to apply?', a: 'Two passport photographs, a written statement of purpose or application letter, your previous educational qualification, a recent Hepatitis B test result and the ₦15,000 registration fee.' },
-  { q: 'How much do the courses cost?', a: 'Tuition ranges from ₦100,000 to ₦1,000,000 for short and main courses, and ₦1,550,000 for the Diploma in Culinary Arts. The fee table on this page shows each total including VAT and registration.' },
-  { q: 'Is VAT included in the fees?', a: 'No. VAT of 7.5% applies to course fees, and the registration fee is separate. The fee table shows the exact total for each programme.' },
+  { q: 'How much do the courses cost?', a: 'Total fees, including VAT and registration, range from ₦122,500 for the Spice and Herbs Class to ₦1,681,250 for the Diploma in Culinary Arts. The fee table on this page shows each total including VAT and registration.' },
+  { q: 'Is VAT included in the fees?', a: 'Yes. The total fee for each programme includes 7.5% VAT on tuition and the ₦15,000 registration fee. The fee table shows the breakdown.' },
   { q: 'Do you accept instalment payments?', a: 'An instalment plan is available to indigenous students only; it is not available to international students. Any instalment not paid on its due date attracts 10 percent interest.' },
   { q: 'Can I pay now and resume later?', a: 'Yes. You can secure your admission, pay your tuition and resume later, but not later than the next intake.' },
   { q: 'Can I work and do a programme with you?', a: 'Our classes run in the morning only, on Monday, Wednesday and Friday, so many students fit them around afternoon or evening work.' },
@@ -137,8 +137,8 @@ export default function Admissions() {
         <div className="container">
           <Reveal className="section__header section__header--center">
             <span className="eyebrow">Fees and payment</span>
-            <h2>What it costs</h2>
-            <p>Totals include 7.5% VAT on tuition and the ₦15,000 registration fee.</p>
+            <h2>Total fees including VAT and registration</h2>
+            <p>VAT is calculated on tuition only, with the registration fee added separately.</p>
           </Reveal>
           <Reveal className="table-wrap adm-fees">
             <table>

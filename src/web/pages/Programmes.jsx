@@ -39,7 +39,7 @@ export default function Programmes() {
       <PageHeader
         eyebrow="Programmes"
         title="Programmes & courses"
-        intro="From a one-week crash course to a full diploma. Fees are tuition; 7.5% VAT and a ₦15,000 registration fee apply."
+        intro="From a one-week crash course to a full diploma. Fees shown are totals, including 7.5% VAT and the ₦15,000 registration fee."
       />
 
       <section className="section">

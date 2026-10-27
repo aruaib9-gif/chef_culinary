@@ -35,8 +35,7 @@ export default function ProgrammeDetail() {
           <dl className="grid">
             <div><dt className="muted">Duration</dt><dd>{programme.durationWeeks ? `${programme.durationWeeks} ${programme.durationWeeks === 1 ? 'week' : 'weeks'}` : '—'}</dd></div>
             <div><dt className="muted">Schedule</dt><dd>{programme.schedule ?? '—'}</dd></div>
-            <div><dt className="muted">Tuition</dt><dd>{programme.fee == null ? 'Contact us for the fee' : formatFee(programme.fee)}</dd></div>
-            {fees && <div><dt className="muted">Total with VAT and registration</dt><dd>{formatFee(fees.total)}</dd></div>}
+            <div><dt className="muted">Total fee (incl. VAT and registration)</dt><dd>{fees ? formatFee(fees.total) : 'Contact us for the fee'}</dd></div>
             {programme.intakeDates && <div><dt className="muted">Intakes</dt><dd>{programme.intakeDates}</dd></div>}
             {programme.applicationDeadline && <div><dt className="muted">Application deadline</dt><dd>{date(programme.applicationDeadline)}</dd></div>}
             {programme.certificateAwarded && <div><dt className="muted">Certificate awarded</dt><dd>{programme.certificateAwarded}</dd></div>}
@@ -51,7 +50,7 @@ export default function ProgrammeDetail() {
 
           {fees && (
             <>
-              <h2>Fees</h2>
+              <h2>Fee breakdown</h2>
               <div className="table-wrap">
                 <table>
                   <tbody>
