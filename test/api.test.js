@@ -403,6 +403,33 @@ test('website gallery: built-in photos, admin upload, hide, reorder, delete', as
   assert.equal((await call('/admin/gallery', { token: state.adminToken })).data.length, initial.data.length)
 })
 
+test('website gallery: bulk upload, then bulk hide, recategorise and delete', async () => {
+  const before = (await call('/admin/gallery', { token: state.adminToken })).data.length
+  const ids = []
+  for (const name of ['a.png', 'b.png', 'c.png']) {
+    const up = await call('/uploads', { token: state.adminToken, method: 'POST', body: { filename: name, contentType: 'image/png', size: PNG.length, purpose: 'gallery_photo' } })
+    await call(up.data.uploadUrl, { method: 'PUT', raw: PNG, headers: { 'Content-Type': 'image/png' } })
+    await call(`/uploads/${up.data.fileId}/complete`, { token: state.adminToken, method: 'POST' })
+    ids.push((await call('/admin/gallery', { token: state.adminToken, method: 'POST', body: { fileId: up.data.fileId, caption: name } })).data.id)
+  }
+
+  const bad = await call('/admin/gallery/bulk', { token: state.adminToken, method: 'POST', body: { ids, action: 'category' } })
+  assert.equal(bad.status, 400, 'moving needs a category')
+
+  const hide = await call('/admin/gallery/bulk', { token: state.adminToken, method: 'POST', body: { ids: ids.slice(0, 2), action: 'hide' } })
+  assert.equal(hide.data.count, 2)
+  const pub = (await call('/public/gallery')).data
+  assert.ok(!pub.some((p) => ids.slice(0, 2).includes(p.id)) && pub.some((p) => p.id === ids[2]))
+
+  await call('/admin/gallery/bulk', { token: state.adminToken, method: 'POST', body: { ids, action: 'category', category: 'events' } })
+  const rows = (await call('/admin/gallery', { token: state.adminToken })).data.filter((p) => ids.includes(p.id))
+  assert.ok(rows.every((p) => p.category === 'events'))
+
+  const del = await call('/admin/gallery/bulk', { token: state.adminToken, method: 'POST', body: { ids, action: 'delete' } })
+  assert.equal(del.data.count, 3)
+  assert.equal((await call('/admin/gallery', { token: state.adminToken })).data.length, before)
+})
+
 test('certificates: issue, download, public verification, revoke', async () => {
   const cert = await call('/admin/certificates', { token: state.adminToken, method: 'POST', body: { studentId: state.studentId } })
   assert.equal(cert.status, 201, JSON.stringify(cert.data))

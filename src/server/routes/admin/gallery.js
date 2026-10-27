@@ -64,6 +64,28 @@ gallery.post('/:id/move', async (req, res) => {
   res.json({ ok: true })
 })
 
+// Several photos at once: show, hide, change category or delete.
+const bulkSchema = z.object({
+  ids: z.array(id).min(1, 'Select at least one photo').max(500),
+  action: z.enum(['show', 'hide', 'category', 'delete']),
+  category: category.optional(),
+}).refine((b) => b.action !== 'category' || b.category, { message: 'Choose a category', path: ['category'] })
+
+gallery.post('/bulk', async (req, res) => {
+  const b = parse(bulkSchema, req.body)
+  const filter = { _id: { $in: b.ids } }
+  if (b.action === 'delete') {
+    const rows = await GalleryPhoto.find(filter, 'file_id').lean()
+    await GalleryPhoto.deleteMany(filter)
+    await Promise.all(rows.filter((r) => r.file_id).map((r) => deleteFile(r.file_id)))
+    await audit(req, 'gallery.bulk_delete', 'gallery', null, { count: rows.length })
+    return res.json({ ok: true, count: rows.length })
+  }
+  const set = b.action === 'category' ? { category: b.category } : { is_published: b.action === 'show' }
+  const r = await GalleryPhoto.updateMany(filter, { $set: set })
+  res.json({ ok: true, count: r.modifiedCount })
+})
+
 gallery.delete('/:id', async (req, res) => {
   const row = await GalleryPhoto.findByIdAndDelete(idParam(req)).lean()
   if (!row) throw notFoundError()
