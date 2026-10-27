@@ -811,3 +811,11 @@
 
 .gal-bulk__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .gal-bulk__select { min-height: 30px; font-size: var(--text-xs); }
+
+/* Fee breakdown in the programmes table */
+.a-fees { margin: 0; display: grid; gap: 2px; min-width: 190px; }
+.a-fees > div { display: flex; justify-content: space-between; gap: var(--space-3); }
+.a-fees dt { font-size: var(--text-xs); color: var(--color-ink-muted); text-align: left; }
+.a-fees dd { margin: 0; font-size: var(--text-xs); }
+.a-fees__total { border-top: 1px solid var(--color-line); padding-top: 2px; margin-top: 2px; }
+.a-fees__total dt, .a-fees__total dd { font-weight: 700; color: var(--color-ink); font-size: var(--text-sm); }

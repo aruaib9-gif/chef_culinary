@@ -4,9 +4,22 @@ import { useApi } from '../lib/useApi.js'
 import { api, fetchFile, uploadFile } from '../lib/api.js'
 import { useAuth, useLookups } from '../lib/auth.jsx'
 import { money, fileSize } from '../lib/format.js'
+import { feeBreakdown } from '@cca/shared/format'
 import { PageHeader, Loading, ErrorBox, Badge, Modal, Field, Checkbox, Tabs, Notice, useAction } from '../components/ui.jsx'
 
 const TYPES = { short: 'Short course', main: 'Main course', diploma: 'Diploma', professional: 'Professional', cohort: 'Sponsored cohort' }
+
+// Tuition, registration, VAT and total, in that order (amounts stored in kobo).
+function FeeLines({ kobo }) {
+  const f = feeBreakdown(kobo / 100)
+  const rows = [['Tuition', f.tuition], ['Registration', f.registration], ['VAT (7.5%)', f.vat]]
+  return (
+    <dl className="a-fees">
+      {rows.map(([label, n]) => <div key={label}><dt>{label}</dt><dd>{money(n * 100)}</dd></div>)}
+      <div className="a-fees__total"><dt>Total</dt><dd>{money(f.total * 100)}</dd></div>
+    </dl>
+  )
+}
 
 // Programmes (fees, instalments, page content) and courses (spec §5, §9.3).
 export default function Programmes() {
@@ -37,7 +50,7 @@ function ProgrammeList() {
                 <td><strong>{p.name}</strong><div className="a-meta">/{p.slug}</div></td>
                 <td>{TYPES[p.type]}</td>
                 <td>{p.duration_weeks ? `${p.duration_weeks} weeks` : '—'}<div className="a-meta">{p.schedule}</div></td>
-                <td className="num">{p.fee_kobo != null ? money(p.fee_kobo) : <Badge status="pending">To be supplied</Badge>}{p.instalment_plan.length > 1 && <div className="a-meta">{p.instalment_plan.length} instalments</div>}</td>
+                <td className="num">{p.fee_kobo != null ? <FeeLines kobo={p.fee_kobo} /> : <Badge status="pending">To be supplied</Badge>}{p.instalment_plan.length > 1 && <div className="a-meta">{p.instalment_plan.length} instalments</div>}</td>
                 <td>{p.courses.length}</td>
                 <td><OutlineCell path={`/admin/programmes/${p.id}/outline`} outline={p.outline} onChange={reload} /></td>
                 <td className="num">{p.active_students}</td>
@@ -120,7 +133,7 @@ function ProgrammeModal({ programme: p, onClose, onSaved }) {
         <div className="a-form__row">
           <Field label="Duration (weeks)"><input type="number" min="1" value={form.durationWeeks} onChange={set('durationWeeks')} /></Field>
           <Field label="Class schedule"><input value={form.schedule} onChange={set('schedule')} placeholder="Mon, Wed, Fri" /></Field>
-          <Field label="Total fee (₦)" hint="Blank = 'Fee on request'"><input type="number" min="0" value={form.fee} onChange={set('fee')} /></Field>
+          <Field label="Tuition (₦)" hint="Before VAT and registration, which are added automatically. Blank = 'Fee on request'"><input type="number" min="0" value={form.fee} onChange={set('fee')} /></Field>
           <Field label="Application fee (₦)"><input type="number" min="0" value={form.applicationFee} onChange={set('applicationFee')} /></Field>
         </div>
         <fieldset className="panel" style={{ padding: 'var(--space-4)' }}>
