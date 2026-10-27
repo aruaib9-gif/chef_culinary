@@ -104,3 +104,32 @@
 .programme-card__btn {
   margin-top: auto;
 }
+
+/* Fee breakdown: tuition, registration, VAT, total */
+.programme-card__fees {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.programme-card__fees div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.programme-card__fees dt { color: var(--color-ink-muted); }
+.programme-card__fees dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+.programme-card__total {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-line);
+  font-weight: 700;
+}
+
+.programme-card__total dt,
+.programme-card__total dd {
+  color: var(--color-brand-dark);
+  font-size: var(--text-base);
+}

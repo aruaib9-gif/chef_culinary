@@ -55,8 +55,8 @@ export default function ProgrammeDetail() {
                 <table>
                   <tbody>
                     <tr><td>Tuition</td><td>{formatFee(fees.tuition)}</td></tr>
-                    <tr><td>VAT (7.5%)</td><td>{formatFee(fees.vat)}</td></tr>
                     <tr><td>Registration fee</td><td>{formatFee(fees.registration)}</td></tr>
+                    <tr><td>VAT (7.5%)</td><td>{formatFee(fees.vat)}</td></tr>
                     <tr><th>Total</th><th>{formatFee(fees.total)}</th></tr>
                   </tbody>
                 </table>

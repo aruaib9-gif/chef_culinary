@@ -143,7 +143,7 @@ export default function Admissions() {
           <Reveal className="table-wrap adm-fees">
             <table>
               <thead>
-                <tr><th>Programme</th><th>Duration</th><th>Tuition</th><th>VAT (7.5%)</th><th>Registration</th><th>Total</th></tr>
+                <tr><th>Programme</th><th>Duration</th><th>Tuition</th><th>Registration</th><th>VAT (7.5%)</th><th>Total</th></tr>
               </thead>
               <tbody>
                 {programmes.map((p) => {
@@ -153,7 +153,7 @@ export default function Admissions() {
                       <td><Link to={`/programmes/${p.slug}`}>{p.name}</Link></td>
                       <td>{p.durationWeeks} {p.durationWeeks === 1 ? 'week' : 'weeks'}</td>
                       {f
-                        ? <><td>{formatFee(f.tuition)}</td><td>{formatFee(f.vat)}</td><td>{formatFee(f.registration)}</td><td><strong>{formatFee(f.total)}</strong></td></>
+                        ? <><td>{formatFee(f.tuition)}</td><td>{formatFee(f.registration)}</td><td>{formatFee(f.vat)}</td><td><strong>{formatFee(f.total)}</strong></td></>
                         : <td colSpan={4} className="muted">Contact us for the fee</td>}
                     </tr>
                   )

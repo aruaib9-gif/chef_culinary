@@ -11,6 +11,7 @@ const icons = {
 }
 
 export default function ProgrammeCard({ programme }) {
+  const fees = feeBreakdown(programme.fee)
   return (
     <article className="programme-card">
       <div className="programme-card__head">
@@ -22,8 +23,17 @@ export default function ProgrammeCard({ programme }) {
       <ul className="programme-card__meta">
         <li><span className="programme-card__ico" aria-hidden="true">{icons.duration}</span>{programme.durationWeeks} {programme.durationWeeks === 1 ? 'week' : 'weeks'}</li>
         <li><span className="programme-card__ico" aria-hidden="true">{icons.schedule}</span>{programme.schedule}</li>
-        <li><span className="programme-card__ico" aria-hidden="true">{icons.fee}</span>{programme.fee == null ? 'Contact us for the fee' : `${formatFee(feeBreakdown(programme.fee).total)} total, incl. VAT`}</li>
+        {!fees && <li><span className="programme-card__ico" aria-hidden="true">{icons.fee}</span>Contact us for the fee</li>}
       </ul>
+
+      {fees && (
+        <dl className="programme-card__fees">
+          <div><dt>Tuition</dt><dd>{formatFee(fees.tuition)}</dd></div>
+          <div><dt>Registration fee</dt><dd>{formatFee(fees.registration)}</dd></div>
+          <div><dt>VAT (7.5%)</dt><dd>{formatFee(fees.vat)}</dd></div>
+          <div className="programme-card__total"><dt>Total</dt><dd>{formatFee(fees.total)}</dd></div>
+        </dl>
+      )}
 
       <Button to={`/programmes/${programme.slug}`} variant="outline" block className="programme-card__btn">
         View programme
