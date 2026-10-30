@@ -25,6 +25,12 @@ export async function courseAccess(user, course) {
   return (await activeEnrollment(user._id, course._id)) ? 'full' : 'preview'
 }
 
+/** Mongo filter for courses learners can see: published, and any scheduled time has arrived. */
+export const liveCourse = () => ({ is_published: true, $or: [{ publish_at: null }, { publish_at: { $lte: new Date() } }] })
+export const isLive = (c) => Boolean(c.is_published && (!c.publish_at || new Date(c.publish_at) <= new Date()))
+/** 'draft' | 'scheduled' | 'published', for the admin screens. */
+export const publishState = (c) => (!c.is_published ? 'draft' : isLive(c) ? 'published' : 'scheduled')
+
 export async function coverUrls(courses) {
   return signedUrls(courses.map((c) => c.cover_file_id), { expiresIn: 6 * 60 * 60 })
 }
@@ -55,7 +61,7 @@ export async function playLesson(req, lessonId) {
   if (!lesson) throw notFoundError('Lesson not found')
   const course = await VideoCourse.findById(lesson.course_id).lean()
   const staff = isAdmin(req.user)
-  if (!course || (!staff && (!course.is_published || !lesson.is_published))) throw notFoundError('Lesson not found')
+  if (!course || (!staff && (!isLive(course) || !lesson.is_published))) throw notFoundError('Lesson not found')
   const access = await courseAccess(req.user, course)
   if (access !== 'full' && !lesson.is_preview) throw new HttpError(402, 'Buy this course to watch this lesson')
 

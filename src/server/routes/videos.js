@@ -8,7 +8,7 @@ import { parse, idParam } from '../lib/validate.js'
 import { randomToken } from '../lib/security.js'
 import { initializeTransaction, verifyTransaction, paystackEnabled } from '../lib/paystack.js'
 import {
-  courseAccess, coverUrls, courseCard, lessonStats, playLesson, claimViewer, releaseViewer, isAdmin,
+  courseAccess, coverUrls, courseCard, lessonStats, playLesson, claimViewer, releaseViewer, isAdmin, liveCourse,
   settleVideoOrder, emailVideoReceipt,
 } from '../lib/videos.js'
 import { requireAuth } from '../middleware/auth.js'
@@ -16,7 +16,7 @@ import { Router, HttpError, badRequest, notFoundError, defer, rateLimit } from '
 
 export const videos = new Router()
 
-const published = (user) => (isAdmin(user) ? {} : { is_published: true })
+const published = (user) => (isAdmin(user) ? {} : liveCourse())
 
 // ── Catalogue ────────────────────────────────────────────────────────────────
 
@@ -100,7 +100,7 @@ videos.post('/lessons/:id/progress', requireAuth, async (req, res) => {
 // ── Buying ───────────────────────────────────────────────────────────────────
 
 videos.post('/courses/:id/checkout', requireAuth, rateLimit({ windowMs: 15 * 60_000, limit: 20 }), async (req, res) => {
-  const course = await VideoCourse.findOne({ _id: idParam(req), is_published: true }).lean()
+  const course = await VideoCourse.findOne({ _id: idParam(req), ...liveCourse() }).lean()
   if (!course) throw notFoundError('Course not found')
   if (!course.price_kobo) throw badRequest('This course is free — just start watching')
   if ((await courseAccess(req.user, course)) === 'full' && !course.access_days) throw badRequest('You already have this course')

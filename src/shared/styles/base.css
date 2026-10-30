@@ -227,3 +227,37 @@ th {
   font-weight: 600;
   background: var(--color-brand-tint);
 }
+
+/* Checkboxes in the academy colours (site, portal and admin) */
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  display: inline-grid;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1.5px solid #c9b8a4;
+  border-radius: 5px;
+  background: var(--color-surface, #fff);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+input[type='checkbox']::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 22%, 86% 8%, 37% 70%);
+  transform: scale(0);
+  transition: transform 0.12s ease-in-out;
+}
+input[type='checkbox']:hover:not(:disabled) { border-color: var(--color-brand); }
+input[type='checkbox']:checked { background: var(--color-brand); border-color: var(--color-brand); }
+input[type='checkbox']:checked::before { transform: scale(1); }
+input[type='checkbox']:indeterminate { background: var(--color-brand); border-color: var(--color-brand); }
+input[type='checkbox']:indeterminate::before { transform: scale(1); clip-path: inset(40% 0); }
+input[type='checkbox']:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-brand-light); border-color: var(--color-brand); }
+input[type='checkbox']:disabled { cursor: not-allowed; opacity: 0.5; }

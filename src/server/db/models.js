@@ -461,6 +461,7 @@ export const VideoCourse = model('VideoCourse', new Schema({
   price_kobo: { type: Number, default: 0, min: 0 }, // 0 = free for any signed-in account
   access_days: { type: Number, default: null, min: 1 }, // null = lifetime access
   is_published: { type: Boolean, default: false },
+  publish_at: { type: Date, default: null }, // when it goes (or went) live; a future time = scheduled
   sort_order: { type: Number, default: 0 },
   created_by: { type: Id, ref: 'User', default: null },
 }, ts))

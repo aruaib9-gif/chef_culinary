@@ -5,7 +5,7 @@ import { VideoCourse, VideoLesson, VideoEnrollment, VideoOrder, VideoProgress, U
 import { oid } from '../../db/mongo.js'
 import { parse, idParam, id, optionalText, requiredText, kobo, email } from '../../lib/validate.js'
 import { resolveUpload, deleteFile } from '../../lib/storage.js'
-import { coverUrls, lessonStats, playLesson, grantAccess } from '../../lib/videos.js'
+import { coverUrls, lessonStats, playLesson, grantAccess, publishState, isLive } from '../../lib/videos.js'
 import { audit } from '../../lib/audit.js'
 import { requireSuperAdmin } from '../../middleware/auth.js'
 import { Router, badRequest, notFoundError, forbidden } from '../../http.js'
@@ -43,6 +43,7 @@ videoAdmin.get('/courses', async (req, res) => {
     cover_url: covers.get(String(c.cover_file_id)) ?? null,
     lessons: stats.get(String(c._id))?.lessons ?? 0,
     seconds: stats.get(String(c._id))?.seconds ?? 0,
+    publish_state: publishState(c),
     learners: learnerMap.get(String(c._id)) ?? 0,
     sales: isSuper ? salesMap.get(String(c._id))?.n ?? 0 : undefined,
     revenue_kobo: isSuper ? salesMap.get(String(c._id))?.kobo ?? 0 : undefined,
@@ -57,6 +58,7 @@ const courseSchema = z.object({
   priceKobo: kobo.default(0),
   accessDays: z.union([z.coerce.number().int().min(1).max(3650), z.literal(''), z.null()]).optional().transform((v) => v || null),
   isPublished: z.boolean().default(false),
+  publishAt: z.union([z.null(), z.coerce.date()]).optional(), // with isPublished: null = now, a future time = schedule
   coverFileId: z.union([id, z.literal(''), z.null()]).optional(),
 })
 
@@ -89,6 +91,7 @@ videoAdmin.get('/courses/:id', async (req, res) => {
   const covers = await coverUrls([course])
   res.json({
     ...course,
+    publish_state: publishState(course),
     cover_url: covers.get(String(course.cover_file_id)) ?? null,
     lessons: lessons.map((l) => ({ ...l, file: l.file_id ? files.get(String(l.file_id)) ?? null : null })),
   })
@@ -107,13 +110,20 @@ videoAdmin.patch('/courses/:id', async (req, res) => {
   if (has('description')) course.description = b.description ?? ''
   if (has('priceKobo')) course.price_kobo = b.priceKobo
   if (has('accessDays')) course.access_days = b.accessDays
-  if (has('isPublished')) course.is_published = b.isPublished
+  if (has('isPublished')) {
+    // publish_at records when it goes live: the scheduled time, now, or (already live) when it first went live.
+    // Unpublishing clears any schedule.
+    if (!b.isPublished) course.publish_at = null
+    else if (b.publishAt) course.publish_at = b.publishAt
+    else if (!isLive(course)) course.publish_at = new Date()
+    course.is_published = b.isPublished
+  }
   const oldCover = course.cover_file_id
   course.cover_file_id = await coverFor(req, course.cover_file_id)
   await course.save()
   if (oldCover && String(oldCover) !== String(course.cover_file_id)) await deleteFile(oldCover)
   await audit(req, 'video_course.update', 'video_course', course._id, { fields: Object.keys(req.body ?? {}) })
-  res.json(course)
+  res.json({ ...course.toObject(), publish_state: publishState(course) })
 })
 
 videoAdmin.post('/courses/:id/move', async (req, res) => {

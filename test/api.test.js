@@ -474,9 +474,16 @@ test('online video courses: upload, preview, one device, payment, access, revoke
   const detail = await call(`/admin/videos/courses/${courseId}`, { token: admin })
   assert.deepEqual(detail.data.lessons.map((l) => l.title), ['Welcome', 'Puff-puff'])
 
-  // Hidden until published.
+  // Hidden while a draft, and while scheduled for later; live once published.
   assert.ok(!(await call('/videos/courses')).data.some((c) => c.id === courseId))
-  await call(`/admin/videos/courses/${courseId}`, { token: admin, method: 'PATCH', body: { isPublished: true } })
+  const later = new Date(Date.now() + 86_400_000).toISOString()
+  const scheduled = await call(`/admin/videos/courses/${courseId}`, { token: admin, method: 'PATCH', body: { isPublished: true, publishAt: later } })
+  assert.equal(scheduled.data.publish_state, 'scheduled')
+  assert.ok(!(await call('/videos/courses')).data.some((c) => c.id === courseId))
+  assert.equal((await call(`/videos/courses/${course.data.slug}`)).status, 404)
+  const live = await call(`/admin/videos/courses/${courseId}`, { token: admin, method: 'PATCH', body: { isPublished: true, publishAt: null } })
+  assert.equal(live.data.publish_state, 'published')
+  assert.ok(Date.now() - new Date(live.data.publish_at) < 60_000)
   const listed = await call('/videos/courses')
   assert.ok(listed.data.some((c) => c.id === courseId && c.lessons === 2 && c.price_kobo === 2_500_000))
 

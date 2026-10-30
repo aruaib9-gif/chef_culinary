@@ -7,7 +7,7 @@ import { useApi } from '../lib/useApi.js'
 import { api, uploadFile, uploadLargeFile } from '../lib/api.js'
 import { useAuth } from '../lib/auth.jsx'
 import { money, date, dateTime, fileSize } from '../lib/format.js'
-import { PageHeader, Loading, ErrorBox, Badge, Modal, Field, Checkbox, Tabs, Notice, useAction } from '../components/ui.jsx'
+import { PageHeader, Loading, ErrorBox, Badge, Modal, Field, Tabs, Notice, useAction } from '../components/ui.jsx'
 
 const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime']
 const MAX_VIDEO = 5 * 1024 * 1024 * 1024
@@ -64,7 +64,7 @@ export default function OnlineCourses() {
                   <td className="num">{c.lessons}{c.seconds > 0 && <div className="a-meta">{clock(c.seconds)}</div>}</td>
                   <td className="num">{c.learners}</td>
                   {isSuper && <td className="num">{c.sales}<div className="a-meta">{money(c.revenue_kobo)}</div></td>}
-                  <td>{c.is_published ? <Badge status="published" /> : <Badge status="draft">Hidden</Badge>}</td>
+                  <td><PublishBadge course={c} />{c.publish_state === 'scheduled' && <div className="a-meta">{dateTime(c.publish_at)}</div>}</td>
                   <td>
                     <div className="a-row" style={{ gap: 4 }}>
                       <button type="button" className="a-btn a-btn--ghost a-btn--sm" onClick={() => move(c, 'up')} disabled={i === 0 || action.busy} aria-label="Move up">↑</button>
@@ -107,7 +107,7 @@ function NewCourse({ isSuper, onClose }) {
           </Field>
           <Field label="Access period (days)" hint="Blank = lifetime access"><input type="number" min="1" value={form.accessDays} onChange={set('accessDays')} disabled={!isSuper} /></Field>
         </div>
-        <p className="a-meta">The course starts hidden. Add lessons, then publish it from the Details tab.</p>
+        <p className="a-meta">The course starts as a draft. Add lessons, then publish it now or schedule a date.</p>
         {action.error && <Notice tone="error">{action.error.message}</Notice>}
         <div className="a-actions"><button type="button" className="a-btn a-btn--ghost" onClick={onClose}>Cancel</button><button className="a-btn" disabled={action.busy}>{action.busy ? 'Creating…' : 'Create course'}</button></div>
       </form>
@@ -131,9 +131,10 @@ export function OnlineCourseDetail() {
     <>
       <PageHeader
         title={data.title}
-        intro={<><Link to="/online-courses">← All online courses</Link> · {data.price_kobo ? money(data.price_kobo) : 'Free'} · {data.is_published ? 'Published' : 'Hidden from the website'}</>}
+        intro={<><Link to="/online-courses">← All online courses</Link> · {data.price_kobo ? money(data.price_kobo) : 'Free'}</>}
         actions={<NextLink className="a-btn a-btn--ghost" href={`/portal/videos/${data.slug}`} target="_blank">View as learner</NextLink>}
       />
+      <PublishBar course={data} onChange={reload} />
       <Tabs tabs={tabs} value={tab} onChange={setTab} />
       {tab === 'lessons' && <Lessons course={data} onChange={reload} />}
       {tab === 'details' && <Details course={data} isSuper={isSuper} onChange={reload} />}
@@ -322,6 +323,111 @@ function EditLesson({ lesson, onClose, onSaved }) {
   )
 }
 
+// ── Publishing ───────────────────────────────────────────────────────────────
+
+const PUBLISH_LABELS = { draft: 'Draft', scheduled: 'Scheduled', published: 'Published' }
+
+function PublishBadge({ course }) {
+  return <Badge status={course.publish_state}>{PUBLISH_LABELS[course.publish_state]}</Badge>
+}
+
+// <input type="datetime-local"> wants local time as "YYYY-MM-DDTHH:mm".
+const toLocalInput = (d) => {
+  const x = new Date(d)
+  x.setMinutes(x.getMinutes() - x.getTimezoneOffset())
+  return x.toISOString().slice(0, 16)
+}
+const tomorrowAt9 = () => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); return d }
+
+/** Status of the course on the website, with the one or two things you can do next. */
+function PublishBar({ course, onChange }) {
+  const action = useAction()
+  const [scheduling, setScheduling] = useState(false)
+  const [when, setWhen] = useState('')
+  const state = course.publish_state
+  const readyLessons = course.lessons.filter((l) => l.is_published && l.file?.status === 'ready').length
+  const missing = [
+    !readyLessons && 'no visible lessons',
+    !course.cover_url && 'no cover image',
+    !course.summary && 'no short summary',
+  ].filter(Boolean)
+
+  const save = (body, message) => action.run(() => api(`/admin/videos/courses/${course.id}`, { method: 'PATCH', body }), message)
+    .then((ok) => { if (ok) { setScheduling(false); onChange() } })
+
+  function checkReady(verb) {
+    return !missing.length || window.confirm(`This course has ${missing.join(', ')}. ${verb} anyway?`)
+  }
+  function publishNow() {
+    if (checkReady('Publish')) save({ isPublished: true, publishAt: null }, 'Published. The course is now live on the website.')
+  }
+  function openSchedule() {
+    setWhen(toLocalInput(state === 'scheduled' ? course.publish_at : tomorrowAt9()))
+    action.reset()
+    setScheduling(true)
+  }
+  function schedule(e) {
+    e.preventDefault()
+    const at = new Date(when)
+    if (!(at > new Date())) return action.run(async () => { throw new Error('Pick a time in the future.') })
+    if (checkReady('Schedule it')) save({ isPublished: true, publishAt: at.toISOString() }, `Scheduled for ${dateTime(at)}.`)
+  }
+  function unpublish() {
+    const msg = state === 'scheduled'
+      ? 'Cancel the schedule? The course goes back to draft.'
+      : 'Unpublish this course? It disappears from the website, and learners who bought it can\'t open it until you publish it again.'
+    if (window.confirm(msg)) save({ isPublished: false }, state === 'scheduled' ? 'Schedule cancelled. The course is a draft again.' : 'Unpublished. The course is hidden from the website.')
+  }
+
+  const status = {
+    draft: 'Only admins can see this course.',
+    scheduled: <>Goes live on the website on <strong>{dateTime(course.publish_at)}</strong>.</>,
+    published: course.publish_at ? <>Live on the website since {dateTime(course.publish_at)}.</> : 'Live on the website.',
+  }[state]
+
+  return (
+    <div className={`panel pub-bar pub-bar--${state}`}>
+      <div className="pub-bar__main">
+        <div className="pub-bar__status">
+          <PublishBadge course={course} />
+          <span>{status}</span>
+        </div>
+        {!scheduling && (
+          <div className="pub-bar__actions">
+            {state === 'published' ? (
+              <button type="button" className="a-btn a-btn--ghost" onClick={unpublish} disabled={action.busy}>Unpublish</button>
+            ) : (
+              <>
+                {state === 'scheduled'
+                  ? <button type="button" className="a-btn a-btn--ghost" onClick={unpublish} disabled={action.busy}>Cancel schedule</button>
+                  : null}
+                <button type="button" className="a-btn a-btn--ghost" onClick={openSchedule} disabled={action.busy}>{state === 'scheduled' ? 'Change time' : 'Schedule'}</button>
+                <button type="button" className="a-btn" onClick={publishNow} disabled={action.busy}>{action.busy ? 'Publishing…' : 'Publish now'}</button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      {scheduling && (
+        <form className="pub-bar__schedule" onSubmit={schedule}>
+          <Field label="Go live on" hint="Your local time. The course appears on the website automatically at this time.">
+            <input type="datetime-local" value={when} min={toLocalInput(new Date())} onChange={(e) => setWhen(e.target.value)} required />
+          </Field>
+          <div className="pub-bar__actions">
+            <button type="button" className="a-btn a-btn--ghost" onClick={() => setScheduling(false)} disabled={action.busy}>Cancel</button>
+            <button className="a-btn" disabled={action.busy || !when}>{action.busy ? 'Scheduling…' : state === 'scheduled' ? 'Update schedule' : 'Schedule publish'}</button>
+          </div>
+        </form>
+      )}
+      {state !== 'published' && missing.length > 0 && !action.ok && (
+        <p className="a-meta pub-bar__todo">Before publishing: this course has {missing.join(', ')}.</p>
+      )}
+      {action.error && <Notice tone="error">{action.error.message}</Notice>}
+      {action.ok && <Notice tone="success">{action.ok}</Notice>}
+    </div>
+  )
+}
+
 function PreviewLesson({ lesson, onClose }) {
   const getSource = useCallback(() => api(`/admin/videos/lessons/${lesson.id}/play`, { method: 'POST' }), [lesson.id])
   return (
@@ -337,7 +443,7 @@ function Details({ course, isSuper, onChange }) {
   const del = useAction()
   const [form, setForm] = useState({
     title: course.title, slug: course.slug, summary: course.summary ?? '', description: course.description ?? '',
-    price: course.price_kobo ? String(course.price_kobo / 100) : '', accessDays: course.access_days ? String(course.access_days) : '', isPublished: course.is_published,
+    price: course.price_kobo ? String(course.price_kobo / 100) : '', accessDays: course.access_days ? String(course.access_days) : '',
   })
   const [cover, setCover] = useState(null)
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -349,7 +455,7 @@ function Details({ course, isSuper, onChange }) {
       return api(`/admin/videos/courses/${course.id}`, {
         method: 'PATCH',
         body: {
-          title: form.title, slug: form.slug, summary: form.summary, description: form.description, isPublished: form.isPublished,
+          title: form.title, slug: form.slug, summary: form.summary, description: form.description,
           ...(isSuper ? { priceKobo: Math.round(Number(form.price || 0) * 100), accessDays: form.accessDays } : {}),
           ...(coverFileId ? { coverFileId } : {}),
         },
@@ -382,7 +488,6 @@ function Details({ course, isSuper, onChange }) {
             <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setCover(e.target.files[0] ?? null)} />
           </div>
         </Field>
-        <Checkbox label="Published on the website" hint="Hidden courses can only be seen by admins" checked={form.isPublished} onChange={(v) => setForm((f) => ({ ...f, isPublished: v }))} />
         {action.error && <Notice tone="error">{action.error.message}</Notice>}
         {action.ok && <Notice tone="success">Saved.</Notice>}
         <div className="a-actions"><button className="a-btn" disabled={action.busy}>{action.busy ? 'Saving…' : 'Save changes'}</button></div>
