@@ -5,7 +5,10 @@
 import crypto from 'node:crypto'
 import path from 'node:path'
 import { mkdir, readFile, writeFile, unlink, open as openFile } from 'node:fs/promises'
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
+import {
+  S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand,
+  CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand, AbortMultipartUploadCommand,
+} from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { config } from '../config.js'
 import { File } from '../db/models.js'
@@ -19,6 +22,7 @@ const OFFICE = {
   pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 }
 export const MATERIAL_TYPES = [...DOC_TYPES, ...Object.values(OFFICE)]
+export const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime']
 
 // What can be uploaded for each purpose, by whom, and how large.
 export const PURPOSES = {
@@ -30,6 +34,9 @@ export const PURPOSES = {
   course_outline: { types: MATERIAL_TYPES, roles: ['super_admin', 'staff'], maxBytes: 10 * 1024 * 1024 },
   payment_proof: { types: DOC_TYPES, roles: ['super_admin'], maxBytes: 5 * 1024 * 1024 },
   gallery_photo: { types: IMAGE_TYPES, roles: ['super_admin', 'staff'], maxBytes: 10 * 1024 * 1024 },
+  video_cover: { types: IMAGE_TYPES, roles: ['super_admin', 'staff'], maxBytes: 5 * 1024 * 1024 },
+  // Uploaded in parts (multipart), so large recordings survive a flaky connection.
+  training_video: { types: VIDEO_TYPES, roles: ['super_admin', 'staff'], maxBytes: 5 * 1024 * 1024 * 1024, multipart: true },
 }
 
 // ── Type sniffing (magic bytes) ──────────────────────────────────────────────
@@ -40,6 +47,10 @@ export function sniff(buf, filename = '') {
   if (buf.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return 'image/png'
   if (buf.subarray(0, 4).toString() === 'RIFF' && buf.subarray(8, 12).toString() === 'WEBP') return 'image/webp'
   if (buf.subarray(0, 5).toString() === '%PDF-') return 'application/pdf'
+  if (buf.length >= 12 && buf.subarray(4, 8).toString() === 'ftyp') {
+    return buf.subarray(8, 10).toString() === 'qt' ? 'video/quicktime' : 'video/mp4' // ISO media: mp4, m4v, mov
+  }
+  if (buf[0] === 0x1a && buf[1] === 0x45 && buf[2] === 0xdf && buf[3] === 0xa3) return 'video/webm' // Matroska/WebM
   if (buf[0] === 0x50 && buf[1] === 0x4b && buf[2] === 0x03 && buf[3] === 0x04) {
     return OFFICE[filename.split('.').pop()?.toLowerCase()] ?? null // docx/xlsx/pptx are zip files
   }
@@ -107,7 +118,7 @@ async function presignPut(key, contentType) {
   return getSignedUrl(s3(), new PutObjectCommand({ Bucket: config.storage.bucket, Key: key, ContentType: contentType }), { expiresIn: 15 * 60 })
 }
 
-async function presignGet(key, filename, mimeType, inline, expiresIn = 5 * 60) {
+export async function presignGet(key, filename, mimeType, inline, expiresIn = 5 * 60) {
   const disposition = `${inline ? 'inline' : 'attachment'}; filename="${filename.replace(/"/g, '')}"`
   if (isLocal()) return `/api/uploads/local/${localToken(key, 'get', expiresIn)}?d=${encodeURIComponent(disposition)}&t=${encodeURIComponent(mimeType)}`
   return getSignedUrl(
@@ -165,6 +176,7 @@ export async function createUpload(user, { filename, contentType, size, purpose 
   if (!rules.roles.includes(user.role)) throw forbidden()
   if (!rules.types.includes(contentType)) throw badRequest(`Unsupported file type. Allowed: ${typeList(rules.types)}`)
   if (!(size > 0) || size > rules.maxBytes) throw badRequest(`File is too large (max ${rules.maxBytes / 1024 / 1024} MB)`)
+  if (rules.multipart) throw badRequest('Use the multipart upload for this file type')
   const name = cleanName(filename)
   const key = `${purpose}/${new Date().toISOString().slice(0, 7)}/${crypto.randomBytes(16).toString('hex')}/${name}`
   const file = await File.create({ key, filename: name, mime_type: contentType, size_bytes: size, purpose, owner_user_id: user.id })
@@ -191,6 +203,69 @@ export async function completeUpload(user, fileId) {
   file.status = 'ready'
   await file.save()
   return file
+}
+
+// ── Multipart upload (large videos) ──────────────────────────────────────────
+// The browser uploads fixed-size parts in parallel, retrying any part that fails, then we stitch them together.
+// The local driver has no multipart support, so it falls back to a single signed PUT.
+
+const PART_SIZE = 16 * 1024 * 1024 // 16 MB; R2 and S3 allow up to 10,000 parts
+const MULTIPART_TTL = 12 * 60 * 60 // part links stay valid long enough for a slow upload
+
+export async function startMultipart(user, { filename, contentType, size, purpose }) {
+  const rules = PURPOSES[purpose]
+  if (!rules?.multipart) throw badRequest('Unknown upload type')
+  if (!rules.roles.includes(user.role)) throw forbidden()
+  if (!rules.types.includes(contentType)) throw badRequest(`Unsupported file type. Allowed: ${typeList(rules.types)}`)
+  if (!(size > 0) || size > rules.maxBytes) throw badRequest(`File is too large (max ${rules.maxBytes / 1024 / 1024 / 1024} GB)`)
+  const name = cleanName(filename)
+  const key = `${purpose}/${new Date().toISOString().slice(0, 7)}/${crypto.randomBytes(16).toString('hex')}/${name}`
+  const file = await File.create({ key, filename: name, mime_type: contentType, size_bytes: size, purpose, owner_user_id: user.id })
+  if (isLocal()) {
+    return { fileId: String(file._id), mode: 'single', uploadUrl: await presignPut(key, contentType), headers: { 'Content-Type': contentType } }
+  }
+  const { UploadId } = await s3().send(new CreateMultipartUploadCommand({ Bucket: config.storage.bucket, Key: key, ContentType: contentType }))
+  file.upload_id = UploadId
+  await file.save()
+  const count = Math.ceil(size / PART_SIZE)
+  const parts = await Promise.all(Array.from({ length: count }, async (_, i) => ({
+    partNumber: i + 1,
+    url: await getSignedUrl(s3(), new UploadPartCommand({ Bucket: config.storage.bucket, Key: key, UploadId, PartNumber: i + 1 }), { expiresIn: MULTIPART_TTL }),
+  })))
+  return { fileId: String(file._id), mode: 'multipart', partSize: PART_SIZE, parts }
+}
+
+/** Joins the uploaded parts (`parts`: [{ partNumber, etag }]) and then checks the file like completeUpload. */
+export async function completeMultipart(user, fileId, parts) {
+  const file = await File.findById(fileId)
+  if (!file) throw notFoundError('Upload not found')
+  if (String(file.owner_user_id) !== String(user.id)) throw forbidden()
+  if (file.status === 'ready') return file
+  if (!isLocal() && file.upload_id) {
+    const sorted = [...parts].sort((a, b) => a.partNumber - b.partNumber).map((p) => ({ PartNumber: p.partNumber, ETag: p.etag }))
+    try {
+      await s3().send(new CompleteMultipartUploadCommand({
+        Bucket: config.storage.bucket, Key: file.key, UploadId: file.upload_id, MultipartUpload: { Parts: sorted },
+      }))
+    } catch (err) {
+      throw badRequest(`The video could not be assembled (${err.name ?? 'storage error'}). Please upload it again.`)
+    }
+    file.upload_id = undefined
+    await file.save()
+  }
+  return completeUpload(user, fileId)
+}
+
+export async function abortMultipart(user, fileId) {
+  const file = await File.findById(fileId)
+  if (!file || file.status === 'ready') return
+  if (String(file.owner_user_id) !== String(user.id)) throw forbidden()
+  if (!isLocal() && file.upload_id) {
+    await s3().send(new AbortMultipartUploadCommand({ Bucket: config.storage.bucket, Key: file.key, UploadId: file.upload_id })).catch(() => {})
+  } else {
+    await removeObject(file.key)
+  }
+  await file.deleteOne()
 }
 
 /**

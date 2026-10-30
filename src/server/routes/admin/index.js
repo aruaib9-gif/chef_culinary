@@ -14,6 +14,7 @@ import { services } from './services.js'
 import { reports } from './reports.js'
 import { system } from './system.js'
 import { gallery } from './gallery.js'
+import { videoAdmin } from './videos.js'
 
 // Back office (spec §9). Everything requires a staff or super-admin session;
 // finance, publishing, users and settings are further restricted to super admins inside each module.
@@ -33,4 +34,5 @@ admin.use('/certificates', certificates)
 admin.use('/', services) // /requests, /feedback
 admin.use('/reports', reports)
 admin.use('/gallery', gallery)
+admin.use('/videos', videoAdmin)
 admin.use('/', system) // /users, /settings, /audit-log, /message-log

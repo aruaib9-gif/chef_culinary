@@ -12,6 +12,7 @@ export const adminNav = [
   { to: '/results', label: 'Results & grading' },
   { to: '/attendance', label: 'Attendance' },
   { to: '/learning', label: 'Materials & assignments' },
+  { to: '/online-courses', label: 'Online courses' },
   { to: '/certificates', label: 'Certificates' },
   { group: 'Finance', superOnly: true },
   { to: '/finance', label: 'Payments & fees', superOnly: true },

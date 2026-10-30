@@ -3,6 +3,7 @@ export const mainNav = [
   { to: '/', label: 'Home', end: true },
   { to: '/about', label: 'About' },
   { to: '/programmes', label: 'Programmes' },
+  { to: '/online-courses', label: 'Online Courses' },
   { to: '/admissions', label: 'Admissions' },
   { to: '/student-life', label: 'Student Life' },
   { to: '/careers', label: 'Careers' },

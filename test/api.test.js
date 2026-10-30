@@ -442,6 +442,107 @@ test('certificates: issue, download, public verification, revoke', async () => {
   assert.equal(v2.data.status, 'revoked')
 })
 
+test('online video courses: upload, preview, one device, payment, access, revoke', async () => {
+  const MP4 = Buffer.concat([Buffer.from([0, 0, 0, 0x18]), Buffer.from('ftypisom'), Buffer.alloc(12), Buffer.from('rest of the movie')])
+  const admin = state.adminToken
+  const uploadVideo = async (bytes, name = 'Lesson one.mp4') => {
+    const start = await call('/uploads/multipart', { token: admin, method: 'POST', body: { filename: name, contentType: 'video/mp4', size: bytes.length, purpose: 'training_video' } })
+    assert.equal(start.status, 201, JSON.stringify(start.data))
+    assert.equal(start.data.mode, 'single') // local driver
+    await call(start.data.uploadUrl, { method: 'PUT', raw: bytes, headers: { 'Content-Type': 'video/mp4' } })
+    return call(`/uploads/multipart/${start.data.fileId}/complete`, { token: admin, method: 'POST', body: { parts: [] } })
+  }
+
+  // Videos must use the multipart route, and must really be videos.
+  const wrongRoute = await call('/uploads', { token: admin, method: 'POST', body: { filename: 'a.mp4', contentType: 'video/mp4', size: 100, purpose: 'training_video' } })
+  assert.equal(wrongRoute.status, 400)
+  assert.equal((await uploadVideo(Buffer.from('not a video at all'))).status, 400)
+  const notStaff = await call('/uploads/multipart', { token: state.applicantToken, method: 'POST', body: { filename: 'a.mp4', contentType: 'video/mp4', size: 100, purpose: 'training_video' } })
+  assert.equal(notStaff.status, 403)
+
+  const course = await call('/admin/videos/courses', { token: admin, method: 'POST', body: { title: 'Small Chops Masterclass', summary: 'Puff-puff to samosa', priceKobo: 2_500_000 } })
+  assert.equal(course.status, 201, JSON.stringify(course.data))
+  const courseId = course.data.id
+  const v1 = await uploadVideo(MP4)
+  assert.equal(v1.status, 200, JSON.stringify(v1.data))
+  assert.equal(v1.data.type, 'video/mp4')
+  const paidLesson = await call(`/admin/videos/courses/${courseId}/lessons`, { token: admin, method: 'POST', body: { title: 'Puff-puff', fileId: v1.data.id } })
+  assert.equal(paidLesson.status, 201, JSON.stringify(paidLesson.data))
+  const v2 = await uploadVideo(MP4, 'Intro.mp4')
+  const preview = await call(`/admin/videos/courses/${courseId}/lessons`, { token: admin, method: 'POST', body: { title: 'Welcome', fileId: v2.data.id, isPreview: true } })
+  await call(`/admin/videos/lessons/${preview.data.id}/move`, { token: admin, method: 'POST', body: { direction: 'up' } })
+  const detail = await call(`/admin/videos/courses/${courseId}`, { token: admin })
+  assert.deepEqual(detail.data.lessons.map((l) => l.title), ['Welcome', 'Puff-puff'])
+
+  // Hidden until published.
+  assert.ok(!(await call('/videos/courses')).data.some((c) => c.id === courseId))
+  await call(`/admin/videos/courses/${courseId}`, { token: admin, method: 'PATCH', body: { isPublished: true } })
+  const listed = await call('/videos/courses')
+  assert.ok(listed.data.some((c) => c.id === courseId && c.lessons === 2 && c.price_kobo === 2_500_000))
+
+  // A new account can watch only the free preview.
+  const buyerEmail = `viewer.${run}@example.com`
+  const signup = await call('/auth/signup', { method: 'POST', body: { fullName: 'Ngozi Viewer', email: buyerEmail, phone: '08035550000', password: 'Chef12345', consent: true } })
+  const buyer = signup.data.token
+  const page = await call(`/videos/courses/${course.data.slug}`, { token: buyer })
+  assert.equal(page.data.access, 'preview')
+  assert.deepEqual(page.data.lessons.map((l) => l.playable), [true, false])
+  assert.equal((await call(`/videos/lessons/${paidLesson.data.id}/play`, { token: buyer, method: 'POST' })).status, 402)
+  assert.equal((await call(`/videos/lessons/${preview.data.id}/play`, { method: 'POST' })).status, 401)
+  const play = await call(`/videos/lessons/${preview.data.id}/play`, { token: buyer, method: 'POST' })
+  assert.equal(play.status, 200, JSON.stringify(play.data))
+  const ranged = await handleApi(new Request(`http://test.local${play.data.url}`, { headers: { Range: 'bytes=4-7' } }))
+  assert.equal(ranged.status, 206)
+  assert.equal(Buffer.from(await ranged.arrayBuffer()).toString(), 'ftyp')
+
+  // One device at a time: a second session is refused until the first lets go.
+  const second = await call('/auth/login', { method: 'POST', body: { identifier: buyerEmail, password: 'Chef12345' } })
+  assert.equal((await call(`/videos/lessons/${preview.data.id}/play`, { token: second.data.token, method: 'POST' })).status, 409)
+  await call('/videos/viewer/release', { token: buyer, method: 'POST' })
+  assert.equal((await call(`/videos/lessons/${preview.data.id}/play`, { token: second.data.token, method: 'POST' })).status, 200)
+  await call('/videos/viewer/release', { token: second.data.token, method: 'POST' })
+
+  // Online checkout needs Paystack keys.
+  assert.equal((await call(`/videos/courses/${courseId}/checkout`, { token: buyer, method: 'POST' })).status, 503)
+
+  // Settlement (as the webhook/verify would do it): a wrong amount is never credited; the right one unlocks the course.
+  const { withTransaction } = await import('../src/server/db/mongo.js')
+  const { settleVideoOrder } = await import('../src/server/lib/videos.js')
+  const buyerUser = await models.User.findOne({ email: buyerEmail }).lean()
+  const short = await models.VideoOrder.create({ user_id: buyerUser._id, course_id: courseId, amount_kobo: 2_500_000, reference: `VID-SHORT-${run}` })
+  const r1 = await withTransaction((session) => settleVideoOrder(session, short.reference, { status: 'success', amount: 100_000, currency: 'NGN' }))
+  assert.equal(r1.order.status, 'failed')
+  assert.equal((await call(`/videos/courses/${course.data.slug}`, { token: buyer })).data.access, 'preview')
+  const good = await models.VideoOrder.create({ user_id: buyerUser._id, course_id: courseId, amount_kobo: 2_500_000, reference: `VID-GOOD-${run}` })
+  const r2 = await withTransaction((session) => settleVideoOrder(session, good.reference, { status: 'success', amount: 2_500_000, currency: 'NGN', channel: 'card' }))
+  assert.equal(r2.newlySettled, true)
+  const again = await withTransaction((session) => settleVideoOrder(session, good.reference, { status: 'success', amount: 2_500_000, currency: 'NGN' }))
+  assert.equal(again.newlySettled, false, 'settling twice is harmless')
+  assert.equal((await call(`/videos/courses/${course.data.slug}`, { token: buyer })).data.access, 'full')
+  assert.equal((await call(`/videos/lessons/${paidLesson.data.id}/play`, { token: buyer, method: 'POST' })).status, 200)
+  const prog = await call(`/videos/lessons/${paidLesson.data.id}/progress`, { token: buyer, method: 'POST', body: { position: 95, duration: 100, playing: false } })
+  assert.equal(prog.data.completed, true)
+
+  // Admin sees the learner and payment, and can remove and restore access.
+  const learners = await call(`/admin/videos/courses/${courseId}/learners`, { token: admin })
+  const row = learners.data.find((l) => l.email === buyerEmail)
+  assert.equal(row.source, 'purchase')
+  assert.equal(row.completed, 1)
+  const orders = await call(`/admin/videos/courses/${courseId}/orders`, { token: admin })
+  assert.equal(orders.data.filter((o) => o.status === 'success').length, 1)
+  await call(`/admin/videos/enrollments/${row.id}/revoke`, { token: admin, method: 'POST' })
+  assert.equal((await call(`/videos/lessons/${paidLesson.data.id}/play`, { token: buyer, method: 'POST' })).status, 402)
+  await call(`/admin/videos/enrollments/${row.id}/restore`, { token: admin, method: 'POST' })
+  assert.equal((await call(`/videos/lessons/${paidLesson.data.id}/play`, { token: buyer, method: 'POST' })).status, 200)
+
+  // Manual grants need an existing account; paid courses can't be deleted.
+  const nobody = await call(`/admin/videos/courses/${courseId}/learners`, { token: admin, method: 'POST', body: { email: 'nobody@example.com' } })
+  assert.equal(nobody.status, 400)
+  const granted = await call(`/admin/videos/courses/${courseId}/learners`, { token: admin, method: 'POST', body: { email: `tunde.${run}@example.com` } })
+  assert.equal(granted.status, 201, JSON.stringify(granted.data))
+  assert.equal((await call(`/admin/videos/courses/${courseId}`, { token: admin, method: 'DELETE' })).status, 400)
+})
+
 test('account lockout after repeated failures, password reset', async () => {
   const email = `lock.${run}@example.com`
   await call('/auth/signup', { method: 'POST', body: { fullName: 'Lock Test', email, phone: '08030000001', password: 'Chef12345', consent: true } })

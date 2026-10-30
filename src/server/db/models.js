@@ -71,6 +71,7 @@ export const File = model('File', new Schema({
   purpose: { type: String, required: true },
   status: { type: String, enum: ['pending', 'ready'], default: 'pending' },
   owner_user_id: { type: Id, ref: 'User', default: null },
+  upload_id: { type: String, default: undefined }, // open multipart upload (large videos)
 }, created))
 
 // ── Programmes, courses, grading ─────────────────────────────────────────────
@@ -446,3 +447,78 @@ export async function syncIndexes() {
     await m.createIndexes()
   }))
 }
+
+// ── Online video courses ─────────────────────────────────────────────────────
+// Paid (or free) courses of recorded lessons, open to any portal account. Videos are private in storage and
+// played through short-lived links; `provider` leaves room for a streaming service (e.g. Cloudflare Stream) later.
+
+export const VideoCourse = model('VideoCourse', new Schema({
+  slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  title: { type: String, required: true, trim: true },
+  summary: { type: String, default: '' },
+  description: { type: String, default: '' },
+  cover_file_id: { type: Id, ref: 'File', default: null },
+  price_kobo: { type: Number, default: 0, min: 0 }, // 0 = free for any signed-in account
+  access_days: { type: Number, default: null, min: 1 }, // null = lifetime access
+  is_published: { type: Boolean, default: false },
+  sort_order: { type: Number, default: 0 },
+  created_by: { type: Id, ref: 'User', default: null },
+}, ts))
+
+const videoLessonSchema = new Schema({
+  course_id: { type: Id, ref: 'VideoCourse', required: true, index: true },
+  title: { type: String, required: true, trim: true },
+  description: { type: String, default: '' },
+  provider: { type: String, enum: ['storage', 'stream'], default: 'storage' },
+  file_id: { type: Id, ref: 'File', default: null }, // provider 'storage'
+  stream_uid: { type: String, default: null }, // provider 'stream' (future)
+  duration_seconds: { type: Number, default: null },
+  is_preview: { type: Boolean, default: false }, // free sample anyone signed in can watch
+  is_published: { type: Boolean, default: true },
+  sort_order: { type: Number, default: 0 },
+}, ts)
+videoLessonSchema.index({ course_id: 1, sort_order: 1 })
+export const VideoLesson = model('VideoLesson', videoLessonSchema)
+
+const videoEnrollmentSchema = new Schema({
+  user_id: { type: Id, ref: 'User', required: true, index: true },
+  course_id: { type: Id, ref: 'VideoCourse', required: true, index: true },
+  source: { type: String, enum: ['purchase', 'admin', 'free'], required: true },
+  order_id: { type: Id, ref: 'VideoOrder', default: null },
+  granted_by: { type: Id, ref: 'User', default: null },
+  expires_at: { type: Date, default: null },
+  revoked_at: { type: Date, default: null },
+}, ts)
+videoEnrollmentSchema.index({ user_id: 1, course_id: 1 }, { unique: true })
+export const VideoEnrollment = model('VideoEnrollment', videoEnrollmentSchema)
+
+export const VideoOrder = model('VideoOrder', new Schema({
+  user_id: { type: Id, ref: 'User', required: true, index: true },
+  course_id: { type: Id, ref: 'VideoCourse', required: true, index: true },
+  amount_kobo: { type: Number, required: true, min: 1 },
+  reference: { type: String, required: true, unique: true },
+  status: { type: String, enum: ['pending', 'success', 'failed', 'cancelled'], default: 'pending' },
+  paid_at: { type: Date, default: null },
+  channel: { type: String, default: null },
+  gateway_response: Schema.Types.Mixed,
+  notes: String,
+}, created))
+
+const videoProgressSchema = new Schema({
+  user_id: { type: Id, ref: 'User', required: true },
+  lesson_id: { type: Id, ref: 'VideoLesson', required: true },
+  course_id: { type: Id, ref: 'VideoCourse', required: true },
+  position_seconds: { type: Number, default: 0 },
+  completed: { type: Boolean, default: false },
+}, ts)
+videoProgressSchema.index({ user_id: 1, lesson_id: 1 }, { unique: true })
+videoProgressSchema.index({ user_id: 1, course_id: 1 })
+export const VideoProgress = model('VideoProgress', videoProgressSchema)
+
+// One device at a time per account: the session currently playing, refreshed by the player's heartbeat.
+export const VideoViewer = model('VideoViewer', new Schema({
+  user_id: { type: Id, ref: 'User', required: true, unique: true },
+  session_id: { type: Id, ref: 'Session', required: true },
+  lesson_id: { type: Id, ref: 'VideoLesson', default: null },
+  last_seen_at: { type: Date, default: Date.now },
+}))

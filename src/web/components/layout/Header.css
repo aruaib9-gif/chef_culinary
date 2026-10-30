@@ -189,15 +189,30 @@
   }
 }
 
-/* Narrow desktops: tighten the ten nav links so the brand and both buttons fit. */
+/* Desktop: eleven nav links, the brand and both buttons share one row, so keep the links compact. */
+@media (min-width: 1400px) {
+  .site-nav__links {
+    gap: 0;
+  }
+
+  .site-nav__links a {
+    padding-inline: 5px;
+    font-size: 13px;
+  }
+}
+
 @media (min-width: 1200px) and (max-width: 1399px) {
   .site-header__inner,
   .site-nav {
     gap: var(--space-2);
   }
 
+  .site-nav__links {
+    gap: 0;
+  }
+
   .site-nav__links a {
     padding-inline: 4px;
-    font-size: 13px;
+    font-size: 12.5px;
   }
 }

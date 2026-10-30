@@ -11,6 +11,7 @@ import { leads } from './routes/leads.js'
 import { publicRoutes } from './routes/public.js'
 import { payments } from './routes/payments.js'
 import { uploads } from './routes/uploads.js'
+import { videos } from './routes/videos.js'
 import { systemRoutes } from './routes/system.js'
 
 const api = new Router()
@@ -24,6 +25,7 @@ api.use('/leads', leads)
 api.use('/public', publicRoutes)
 api.use('/payments', payments)
 api.use('/uploads', uploads)
+api.use('/videos', videos)
 
 export function handleApi(request) {
   return dispatch(api, request, async (req) => {

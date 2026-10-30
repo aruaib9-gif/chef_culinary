@@ -95,3 +95,10 @@ export async function uploadFile(file, purpose) {
   const done = await api(`/uploads/${start.fileId}/complete`, { method: 'POST' })
   return done.id
 }
+
+/** Frees this account's video playback slot; `keepalive` lets it finish while the page is closing. */
+export function releaseVideoSlot() {
+  const token = getToken()
+  if (!token) return
+  fetch(`${BASE}/api/videos/viewer/release`, { method: 'POST', keepalive: true, headers: { Authorization: `Bearer ${token}` } }).catch(() => {})
+}

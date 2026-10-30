@@ -11,6 +11,7 @@ const studentNav = [
   { to: '/portal/timetable', label: 'Timetable' },
   { to: '/portal/course-outline', label: 'Course outline' },
   { to: '/portal/materials', label: 'Materials' },
+  { to: '/portal/videos', label: 'Online courses' },
   { to: '/portal/assignments', label: 'Assignments' },
   { to: '/portal/notices', label: 'Notices' },
   { to: '/portal/certificates', label: 'Certificates' },
@@ -21,6 +22,7 @@ const studentNav = [
 const applicantNav = [
   { to: '/portal', label: 'My application', end: true },
   { to: '/admissions/apply', label: 'Application form' },
+  { to: '/portal/videos', label: 'Online courses' },
   { to: '/portal/profile', label: 'Account' },
 ]
 
@@ -38,7 +40,7 @@ export default function PortalLayout({ children }) {
     <div className="portal">
       <header className="portal__bar">
         <div className="container portal__bar-inner">
-          <Link to="/portal" className="portal__brand">{user?.role === 'student' ? 'Student Portal' : 'Applicant Portal'}</Link>
+          <Link to="/portal" className="portal__brand">{user?.role === 'student' ? 'Student Portal' : 'My Portal'}</Link>
           <div className="portal__account">
             {user?.fullName && <span className="portal__user">Hi, {user.fullName.split(' ')[0]}</span>}
             <button type="button" className="portal__logout" onClick={handleLogout}>Sign out</button>
