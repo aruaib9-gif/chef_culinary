@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams, safeNext } from '@/lib/router'
 import { useAuth } from '../../lib/auth.jsx'
-import PageHeader from '../../components/ui/PageHeader.jsx'
 import Button from '../../components/ui/Button.jsx'
 import PasswordInput from '../../components/portal/PasswordInput.jsx'
 import { Field, ErrorBox, Notice } from '../../components/portal/ui.jsx'
@@ -37,11 +36,8 @@ export default function Login() {
   }
 
   return (
-    <>
-      <PageHeader eyebrow="Student portal" title="Sign in" intro="Access your dashboard, results, payments, timetable and more." />
-      <section className="section">
-        <div className="container auth-wrap">
-          <div className="auth-card">
+    <section className="auth-screen">
+      <div className="auth-card">
             {otp ? (
               <>
                 <h2>Check your email</h2>
@@ -77,9 +73,7 @@ export default function Login() {
                 </div>
               </>
             )}
-          </div>
-        </div>
-      </section>
-    </>
+      </div>
+    </section>
   )
 }

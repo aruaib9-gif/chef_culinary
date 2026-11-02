@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams, safeNext } from '@/lib/router'
 import { useAuth } from '../../lib/auth.jsx'
-import PageHeader from '../../components/ui/PageHeader.jsx'
 import Button from '../../components/ui/Button.jsx'
 import PasswordInput from '../../components/portal/PasswordInput.jsx'
 import { Field, ErrorBox } from '../../components/portal/ui.jsx'
@@ -43,12 +42,9 @@ export default function Signup() {
   }
 
   return (
-    <>
-      <PageHeader eyebrow="Admissions" title="Create your account" intro="Your account lets you apply online, save your progress and track your application." />
-      <section className="section">
-        <div className="container auth-wrap">
-          <div className="auth-card">
-            <h2>Applicant sign-up</h2>
+    <section className="auth-screen">
+      <div className="auth-card">
+        <h2>Applicant sign-up</h2>
             <p className="muted">Already a student? <Link to="/portal/login">Sign in</Link> with your student ID.</p>
             <form className="p-form" onSubmit={submit} noValidate>
               <ErrorBox error={error} />
@@ -76,9 +72,7 @@ export default function Signup() {
               {errors.consent && <span className="p-field__error">{errors.consent}</span>}
               <Button type="submit" block disabled={busy}>{busy ? 'Creating account…' : 'Create account'}</Button>
             </form>
-          </div>
-        </div>
-      </section>
-    </>
+      </div>
+    </section>
   )
 }
