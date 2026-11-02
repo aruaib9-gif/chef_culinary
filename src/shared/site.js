@@ -10,12 +10,11 @@ export const site = {
   phoneIntl: '2348117248206',
   emails: ['thechefsculinary@gmail.com', 'chefacademyphc@gmail.com'],
   whatsappMessage: "Hello, I'd like to know more about your culinary programmes.",
-  // TODO: replace these with the academy's real profile URLs.
   social: {
-    facebook: 'https://facebook.com/',
-    instagram: 'https://instagram.com/',
+    facebook: 'https://www.facebook.com/share/1FNjohCnm1/',
+    instagram: 'https://www.instagram.com/thechefsculinaryphc',
     youtube: '',
-    tiktok: 'https://tiktok.com/',
+    tiktok: '',
     x: '',
     linkedin: '',
   },

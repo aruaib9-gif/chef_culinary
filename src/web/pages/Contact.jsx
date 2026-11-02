@@ -17,7 +17,7 @@ const socials = [
   { key: 'instagram', label: 'Instagram', icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg> },
   { key: 'facebook', label: 'Facebook', icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22 12a10 10 0 10-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0022 12z" /></svg> },
   { key: 'tiktok', label: 'TikTok', icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.5 3c.3 2.1 1.5 3.6 3.5 3.8v2.5c-1.3.1-2.5-.3-3.6-1v5.9c0 3.4-2.6 5.8-5.9 5.4-2.6-.3-4.5-2.5-4.5-5 0-2.9 2.6-5.1 5.5-4.6v2.6c-.4-.1-.9-.2-1.3-.1-1.1.2-1.9 1.1-1.8 2.3.1 1.1 1 2 2.1 2 1.2 0 2.1-.9 2.1-2.2V3h3.4z" /></svg> },
-].filter((s) => site.social[s.key])
+].filter((s) => s.key !== 'tiktok' && site.social[s.key]) // TikTok disabled for now
 
 const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`
 

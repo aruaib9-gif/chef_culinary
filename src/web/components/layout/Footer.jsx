@@ -25,7 +25,8 @@ const socialLinks = [
 ]
 
 export default function Footer() {
-  const socials = socialLinks.filter((s) => site.social[s.key])
+  // TikTok disabled for now
+  const socials = socialLinks.filter((s) => s.key !== 'tiktok' && site.social[s.key])
 
   return (
     <footer className="site-footer">

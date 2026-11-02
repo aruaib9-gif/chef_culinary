@@ -16,3 +16,6 @@ dist
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Claude Code local config
+.claude/
