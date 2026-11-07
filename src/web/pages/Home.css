@@ -662,3 +662,66 @@
   max-width: 64ch;
   color: var(--color-ink-muted);
 }
+
+/* ---------- Food in motion (scrolling strip) ---------- */
+.food-strip {
+  overflow: hidden;
+}
+
+.food-marquee {
+  margin-top: var(--space-5);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.food-marquee__track {
+  display: flex;
+  gap: var(--space-4);
+  width: max-content;
+  padding-inline: var(--space-4);
+  list-style: none;
+  margin: 0;
+  animation: foodscroll 45s linear infinite;
+}
+
+.food-marquee:hover .food-marquee__track {
+  animation-play-state: paused;
+}
+
+.food-marquee__item {
+  flex: none;
+}
+
+.food-marquee__item img {
+  display: block;
+  height: 240px;
+  width: 320px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 14px 30px rgb(30 20 14 / 0.14);
+}
+
+@keyframes foodscroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Reduced motion / no-JS: a normal scrollable row instead of auto-scroll */
+.food-marquee.is-static {
+  overflow-x: auto;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.food-marquee.is-static .food-marquee__track {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .food-marquee__track { animation: none; }
+  .food-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+}
+
+@media (max-width: 640px) {
+  .food-marquee__item img { height: 180px; width: 240px; }
+}

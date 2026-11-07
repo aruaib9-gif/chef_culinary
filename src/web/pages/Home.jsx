@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Link } from '@/lib/router'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useProgrammes } from '../lib/useProgrammes.js'
+import { api } from '../lib/api.js'
 import Button from '../components/ui/Button.jsx'
 import ProgrammeCard from '../components/ProgrammeCard.jsx'
 import Reveal from '../components/ui/Reveal.jsx'
@@ -105,10 +106,19 @@ const faqs = [
   { q: 'Where is the academy located?', a: 'No. 17 Chimatem Complex, along Ohiamini/Psychiatric Road, beside Wingate Hotel, Rumigbo/Rumuola, Port Harcourt.' },
 ]
 
+// Fallback food/kitchen shots shown until admins upload food photos (category "Student dishes").
+const fallbackFood = [
+  { src: foodPhoto, caption: 'A spread of dishes prepared at the academy' },
+  { src: practicalPhoto, caption: 'Students cooking in a practical class' },
+  { src: '/images/IMG_1663.JPG', caption: 'Chefs at a cooking demonstration' },
+  { src: '/images/IMG_1672.JPG', caption: 'A cohort of chefs at a cooking demonstration' },
+]
+
 export default function Home() {
   const { programmes } = useProgrammes()
   const reduce = useReducedMotion()
   const [slide, setSlide] = useState(0)
+  const [foods, setFoods] = useState([])
 
   // Auto-advance the hero slideshow (paused under reduced-motion)
   useEffect(() => {
@@ -116,6 +126,22 @@ export default function Home() {
     const id = setInterval(() => setSlide((s) => (s + 1) % heroSlides.length), 5500)
     return () => clearInterval(id)
   }, [reduce])
+
+  // Food photos for the scrolling strip — admin uploads land in the "dishes" gallery category.
+  useEffect(() => {
+    let alive = true
+    api('/public/gallery')
+      .then((rows) => {
+        if (!alive) return
+        const dishes = (rows || []).filter((r) => r.category === 'dishes')
+        setFoods(dishes.length >= 3 ? dishes : fallbackFood)
+      })
+      .catch(() => alive && setFoods(fallbackFood))
+    return () => { alive = false }
+  }, [])
+
+  // Duplicate the list so the marquee can loop seamlessly.
+  const foodLoop = foods.length ? [...foods, ...foods] : []
 
   // Stagger variants (disabled under reduced-motion)
   const container = reduce
@@ -228,6 +254,27 @@ export default function Home() {
           ))}
         </motion.div>
       </section>
+
+      {foodLoop.length > 0 && (
+        <section className="section food-strip">
+          <div className="container">
+            <Reveal className="section__header section__header--center">
+              <span className="eyebrow">From our kitchens</span>
+              <h2>Food in motion</h2>
+              <p>A taste of the dishes our students create.</p>
+            </Reveal>
+          </div>
+          <div className={`food-marquee${reduce ? ' is-static' : ''}`}>
+            <ul className="food-marquee__track" aria-label="Food gallery">
+              {foodLoop.map((f, i) => (
+                <li className="food-marquee__item" key={`${f.src}-${i}`} aria-hidden={i >= foods.length ? 'true' : undefined}>
+                  <img src={f.src} alt={i < foods.length ? (f.caption || 'A dish prepared at the academy') : ''} loading="lazy" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <section className="section section--warm">
         <div className="container">

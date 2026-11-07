@@ -2,7 +2,7 @@
 // first time the gallery is used, so admins can caption, reorder, hide or delete them like their own uploads.
 export const galleryCategories = {
   classes: 'Classes',
-  dishes: 'Student dishes',
+  dishes: 'Food',
   graduation: 'Graduations',
   events: 'Events',
 }
