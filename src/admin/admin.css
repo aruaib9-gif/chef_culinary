@@ -562,6 +562,13 @@
 .a-table a { color: var(--color-brand-dark); font-weight: 600; }
 .a-empty { padding: var(--space-6); text-align: center; color: var(--color-ink-muted); }
 
+/* Dashboard summary tables sit in a .panel with no horizontal scroll, so pin the
+   layout and wrap long values (incl. unbroken junk tokens) to keep them in the card. */
+.panel .a-table { table-layout: fixed; }
+.panel .a-table td { overflow-wrap: anywhere; }
+.panel .a-table th:first-child, .panel .a-table td:first-child { width: 46%; }
+.panel .a-table td.nowrap { overflow-wrap: normal; }
+
 .a-pager { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; justify-content: flex-end; margin-top: var(--space-3); }
 
 .a-tabs { display: flex; gap: var(--space-1); overflow-x: auto; margin-bottom: var(--space-4); border-bottom: 1px solid var(--color-line); }
