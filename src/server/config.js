@@ -16,6 +16,8 @@ export const config = {
   adminUrl: `${siteUrl}/admin`,
   paystackSecretKey: process.env.PAYSTACK_SECRET_KEY ?? '',
   cronSecret: process.env.CRON_SECRET ?? '',
+  // Cloudflare Turnstile: anti-spam on the public enquiry form. When unset, verification is skipped.
+  turnstileSecret: process.env.TURNSTILE_SECRET_KEY ?? '',
   smtp: {
     host: process.env.SMTP_HOST ?? '',
     port: Number(process.env.SMTP_PORT) || 587,

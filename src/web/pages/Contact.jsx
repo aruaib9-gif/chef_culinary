@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from '@/lib/router'
 import { motion, useReducedMotion } from 'framer-motion'
 import { site, whatsappUrl } from '@cca/shared/site'
@@ -21,23 +21,41 @@ const socials = [
 
 const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`
 
+// Cloudflare Turnstile (anti-spam). When this public key is unset the widget is omitted
+// and the server skips verification, so local/dev still works.
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+
 export default function Contact() {
   const { programmes } = useProgrammes()
   const reduce = useReducedMotion()
   const [status, setStatus] = useState({ state: 'idle' })
+
+  // Load the Turnstile script once, only when a site key is configured.
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || document.getElementById('cf-turnstile-script')) return
+    const s = document.createElement('script')
+    s.id = 'cf-turnstile-script'
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
+    s.async = true
+    s.defer = true
+    document.head.appendChild(s)
+  }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
     const body = Object.fromEntries(form)
     body.consent = form.get('consent') === 'on'
+    body.turnstileToken = form.get('cf-turnstile-response') || undefined
     setStatus({ state: 'sending' })
     try {
       await api('/leads', { method: 'POST', body })
       setStatus({ state: 'sent' })
       e.target.reset()
+      window.turnstile?.reset()
     } catch (err) {
       setStatus({ state: 'error', message: err.message })
+      window.turnstile?.reset()
     }
   }
 
@@ -126,6 +144,7 @@ export default function Contact() {
                   <Link to="/legal/privacy">privacy policy</Link>.
                 </span>
               </label>
+              {TURNSTILE_SITE_KEY && <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" />}
               {status.state === 'sent' && (
                 <p className="form-status form-status--success" role="status">Thank you — we'll be in touch shortly.</p>
               )}
