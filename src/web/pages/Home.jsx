@@ -23,6 +23,7 @@ const galleryF = '/images/IMG_1671.JPG'
 const practicalPhoto = '/images/Chef1.jpg'
 const foodPhoto = '/images/chef2.jpg'
 const graduationPhoto = '/images/chef3.jpg'
+const headChefPhoto = '/images/chief_chef.jpg'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -346,6 +347,31 @@ export default function Home() {
               ))}
             </ul>
             <Reveal delay={0.3}>
+              <Button to="/about">About the academy</Button>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="section chef-feature">
+        <div className="container chef-feature__inner">
+          <Reveal className="chef-feature__media" y={40}>
+            <img src={headChefPhoto} alt="The Head Chef at The Chefs Culinary Academy" loading="lazy" />
+            <span className="chef-feature__badge">Head Chef</span>
+          </Reveal>
+          <div className="chef-feature__body">
+            <Reveal as="span" className="eyebrow">Meet the team</Reveal>
+            <Reveal as="h2" delay={0.05}>Our Head Chef</Reveal>
+            <Reveal as="p" className="chef-feature__role" delay={0.08}>Head Chef &amp; Lead Instructor</Reveal>
+            <Reveal as="p" delay={0.12}>
+              Our Head Chef leads training at The Chefs Culinary Academy, guiding every student from
+              their first knife cut to professional mastery — a hands-on, mentorship-led approach that
+              brings our philosophy, <em>Quality Chefs, Healthy Life</em>, to life in the kitchen every day.
+            </Reveal>
+            <Reveal as="blockquote" className="chef-feature__quote" delay={0.16}>
+              “Cooking and baking is both physical and mental therapy.”
+            </Reveal>
+            <Reveal delay={0.22}>
               <Button to="/about">About the academy</Button>
             </Reveal>
           </div>
