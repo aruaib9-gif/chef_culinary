@@ -9,6 +9,47 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_BYTES = 10 * 1024 * 1024
 const PARALLEL = 3 // uploads at a time
 
+// Phone/camera formats browsers can't display. We convert them to JPEG in the browser
+// before upload. These files often have an empty file.type, so we also match the extension.
+const isHeic = (file) => /image\/hei[cf]/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)
+const isDng = (file) => /dng/i.test(file.type) || /\.dng$/i.test(file.name)
+const isConvertible = (file) => isHeic(file) || isDng(file)
+
+async function heicToJpeg(file) {
+  const heic2any = (await import('heic2any')).default
+  const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 })
+  const out = Array.isArray(blob) ? blob[0] : blob
+  return new File([out], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' })
+}
+
+// DNG is RAW (TIFF-based). Phones and Lightroom embed a full-size JPEG preview; we pull out
+// the largest embedded JPEG and use that — web-quality and displayable everywhere.
+async function dngToJpeg(file) {
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  let best = null
+  for (let i = 0; i + 2 < bytes.length; i++) {
+    if (bytes[i] === 0xff && bytes[i + 1] === 0xd8 && bytes[i + 2] === 0xff) {
+      for (let j = i + 2; j + 1 < bytes.length; j++) {
+        if (bytes[j] === 0xff && bytes[j + 1] === 0xd9) {
+          const len = j + 2 - i
+          if (!best || len > best.len) best = { start: i, len }
+          i = j + 1
+          break
+        }
+      }
+    }
+  }
+  if (!best) throw new Error('No embedded preview found in this DNG — please upload a JPG')
+  const jpeg = bytes.slice(best.start, best.start + best.len)
+  return new File([jpeg], file.name.replace(/\.dng$/i, '.jpg'), { type: 'image/jpeg' })
+}
+
+async function prepareForUpload(file) {
+  if (isHeic(file)) return heicToJpeg(file)
+  if (isDng(file)) return dngToJpeg(file)
+  return file
+}
+
 // Website gallery: photos uploaded here appear on the public Gallery page, in this order.
 export default function Gallery() {
   const { data, error, loading, reload } = useApi('/admin/gallery')
@@ -66,7 +107,7 @@ function Uploader({ onUploaded }) {
   const [queue, setQueue] = useState([]) // { key, name, status: 'waiting'|'uploading'|'done'|'failed', error }
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef(null)
-  const busy = queue.some((q) => q.status === 'waiting' || q.status === 'uploading')
+  const busy = queue.some((q) => q.status === 'waiting' || q.status === 'uploading' || q.status === 'converting')
 
   const update = (key, patch) => setQueue((q) => q.map((item) => (item.key === key ? { ...item, ...patch } : item)))
 
@@ -75,7 +116,11 @@ function Uploader({ onUploaded }) {
     if (!files.length) return
     const items = files.map((file, i) => {
       const key = `${Date.now()}-${i}-${file.name}`
-      const problem = !TYPES.includes(file.type) ? 'Not a JPG, PNG or WebP image' : file.size > MAX_BYTES ? 'Larger than 10 MB' : null
+      // HEIC/DNG are converted to JPEG before upload, so the size cap is checked on the result.
+      const convertible = isConvertible(file)
+      const problem = !TYPES.includes(file.type) && !convertible
+        ? 'Not a JPG, PNG, WebP, HEIC or DNG image'
+        : !convertible && file.size > MAX_BYTES ? 'Larger than 10 MB' : null
       return { key, file, name: file.name, status: problem ? 'failed' : 'waiting', error: problem }
     })
     setQueue((q) => [...q.filter((x) => x.status !== 'done'), ...items.map(({ file, ...rest }) => rest)])
@@ -85,9 +130,12 @@ function Uploader({ onUploaded }) {
     async function worker() {
       while (next < todo.length) {
         const item = todo[next++]
-        update(item.key, { status: 'uploading' })
+        update(item.key, { status: isConvertible(item.file) ? 'converting' : 'uploading' })
         try {
-          const fileId = await uploadFile(item.file, 'gallery_photo')
+          const file = await prepareForUpload(item.file)
+          if (file.size > MAX_BYTES) throw new Error('Converted image is larger than 10 MB')
+          update(item.key, { status: 'uploading' })
+          const fileId = await uploadFile(file, 'gallery_photo')
           const caption = item.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim()
           await api('/admin/gallery', { method: 'POST', body: { fileId, category, caption } })
           update(item.key, { status: 'done' })
@@ -122,13 +170,13 @@ function Uploader({ onUploaded }) {
         <button type="button" className="a-btn" onClick={() => inputRef.current?.click()} disabled={busy}>
           {busy ? `Uploading… ${done} of ${queue.length - failed.length} done` : 'Choose photos'}
         </button>
-        <p className="a-meta">Select as many as you like. JPG, PNG or WebP, up to 10 MB each. New photos go to the top.</p>
+        <p className="a-meta">Select as many as you like. JPG, PNG, WebP, HEIC or DNG, up to 10 MB each (HEIC/DNG are converted to JPG automatically). New photos go to the top.</p>
         <input
           ref={inputRef}
           type="file"
           hidden
           multiple
-          accept={TYPES.join(',')}
+          accept={[...TYPES, 'image/heic', 'image/heif', '.heic', '.heif', 'image/x-adobe-dng', '.dng'].join(',')}
           onChange={(e) => { start(e.target.files); e.target.value = '' }}
         />
       </div>
@@ -150,6 +198,7 @@ function Uploader({ onUploaded }) {
                 <span className="gal-queue__name">{q.name}</span>
                 <span className="gal-queue__status">
                   {q.status === 'waiting' && 'Waiting'}
+                  {q.status === 'converting' && 'Converting…'}
                   {q.status === 'uploading' && 'Uploading…'}
                   {q.status === 'done' && 'Uploaded'}
                   {q.status === 'failed' && (q.error || 'Failed')}
