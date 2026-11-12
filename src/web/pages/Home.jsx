@@ -356,17 +356,17 @@ export default function Home() {
       <section className="section chef-feature">
         <div className="container chef-feature__inner">
           <Reveal className="chef-feature__media" y={40}>
-            <img src={headChefPhoto} alt="The Head Chef at The Chefs Culinary Academy" loading="lazy" />
-            <span className="chef-feature__badge">Head Chef</span>
+            <img src={headChefPhoto} alt="Joy Ossai Onwumere (Chef Jay), Head Chef at The Chefs Culinary Academy" loading="lazy" />
+            <span className="chef-feature__badge">Chef Jay</span>
           </Reveal>
           <div className="chef-feature__body">
-            <Reveal as="span" className="eyebrow">Meet the team</Reveal>
-            <Reveal as="h2" delay={0.05}>Our Head Chef</Reveal>
-            <Reveal as="p" className="chef-feature__role" delay={0.08}>Head Chef &amp; Lead Instructor</Reveal>
+            <Reveal as="span" className="eyebrow">Meet our Head Chef</Reveal>
+            <Reveal as="h2" delay={0.05}>Joy Ossai Onwumere</Reveal>
+            <Reveal as="p" className="chef-feature__role" delay={0.08}>“Chef Jay” · Head Chef &amp; Lead Instructor</Reveal>
             <Reveal as="p" delay={0.12}>
-              Our Head Chef leads training at The Chefs Culinary Academy, guiding every student from
-              their first knife cut to professional mastery — a hands-on, mentorship-led approach that
-              brings our philosophy, <em>Quality Chefs, Healthy Life</em>, to life in the kitchen every day.
+              Chef Jay leads training at The Chefs Culinary Academy, guiding every student from their
+              first knife cut to professional mastery — a hands-on, mentorship-led approach that brings
+              our philosophy, <em>Quality Chefs, Healthy Life</em>, to life in the kitchen every day.
             </Reveal>
             <Reveal as="blockquote" className="chef-feature__quote" delay={0.16}>
               “Cooking and baking is both physical and mental therapy.”
